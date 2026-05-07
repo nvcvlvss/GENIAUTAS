@@ -119,6 +119,61 @@
   text-decoration: underline;
 }
 
+.carouselSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.carousel {
+  display: flex;
+  gap: var(--sp-4);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: var(--sp-2) 0 var(--sp-4);
+  scrollbar-width: none;
+  margin: 0 calc(var(--sp-4) * -1);
+  padding-left: var(--sp-4);
+  padding-right: var(--sp-4);
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carouselItem {
+  flex: 0 0 80%;
+  scroll-snap-align: center;
+}
+
+.schoolCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+}
+
+.schoolIconWrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-circle);
+  background: var(--color-surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+}
+
+.carouselHint {
+  font-size: var(--text-tiny);
+  color: var(--color-text-tertiary);
+  text-align: center;
+  font-style: italic;
+  margin: 0;
+}
+
 .sessionRow {
   display: flex;
   align-items: flex-start;

@@ -183,24 +183,28 @@ export default function JoinSessionPage() {
           {error ? <div className={styles.alert}>{error}</div> : null}
 
           {step === 1 && (
-            <div className={styles.list}>
+            <div className={styles.carouselSection}>
               <h2 className={styles.sectionTitle}>Selecciona tu colegio</h2>
-              {schools.map((school) => (
-                <Card
-                  key={school.id}
-                  interactive
-                  padding="default"
-                  onClick={() => handleSchoolSelect(school.id)}
-                >
-                  <div className={styles.sessionRow}>
-                    <SchoolIcon size={28} color="var(--color-primary)" aria-hidden />
-                    <div>
-                      <p className={styles.sessionTitle}>{school.name}</p>
-                      <p className={styles.sessionMeta}>Toca para continuar</p>
-                    </div>
+              <div className={styles.carousel}>
+                {schools.map((school) => (
+                  <div key={school.id} className={styles.carouselItem}>
+                    <Card
+                      interactive
+                      padding="default"
+                      onClick={() => handleSchoolSelect(school.id)}
+                    >
+                      <div className={styles.schoolCard}>
+                        <div className={styles.schoolIconWrapper}>
+                          <SchoolIcon size={32} color="var(--color-primary)" aria-hidden />
+                        </div>
+                        <p className={styles.sessionTitle}>{school.name}</p>
+                        <p className={styles.sessionMeta}>Toca para entrar</p>
+                      </div>
+                    </Card>
                   </div>
-                </Card>
-              ))}
+                ))}
+              </div>
+              <p className={styles.carouselHint}>Desliza para ver más colegios</p>
             </div>
           )}
 

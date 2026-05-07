@@ -115,13 +115,20 @@ export default function NewSessionPage() {
                   </option>
                 ))}
               </Select>
-              <Input
+              <Select
                 label="Curso"
-                placeholder="Ej: 6° B"
                 value={grade}
                 onChange={(e) => setGrade(e.target.value)}
                 required
-              />
+              >
+                <option value="">Selecciona un curso</option>
+                <option value="5° Básico">5° Básico</option>
+                <option value="6° Básico">6° Básico</option>
+                <option value="7° Básico">7° Básico</option>
+                <option value="8° Básico">8° Básico</option>
+                <option value="1° Medio">1° Medio</option>
+                <option value="2° Medio">2° Medio</option>
+              </Select>
             </div>
           </div>
         </Card>
