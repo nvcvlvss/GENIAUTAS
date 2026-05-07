@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GENIAUTAS 🚀
+> Laboratorio virtual de aula para el aprendizaje de Prompt Engineering.
 
-## Getting Started
+GENIAUTAS es una plataforma educativa diseñada para que docentes de educación básica (10-12 años) puedan guiar a sus estudiantes en el descubrimiento de la Inteligencia Artificial mediante desafíos prácticos y reflexión metacognitiva.
 
-First, run the development server:
+## 🌟 Características Principales
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Para Docentes 👨‍🏫
+- **Gestión de Sesiones:** Crea laboratorios personalizados con objetivos pedagógicos claros.
+- **Configuración de Agentes:** Elige entre diferentes enfoques pedagógicos (Constructivista, Cognitivista o Neutro).
+- **Monitoreo en Tiempo Real:** Supervisa las conversaciones de los estudiantes con la IA y su progreso en las tareas.
+- **Sistema de Alertas:** Notificaciones instantáneas sobre riesgos de seguridad o bloqueos de moderación.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Para Estudiantes 🧒
+- **Acceso Simple:** Ingreso mediante código de sesión y nombre, sin necesidad de cuentas personales.
+- **Chat Educativo:** Interacción con un asistente IA que guía sin dar las respuestas directas.
+- **Roadmap Interactivo:** Visualización clara de las tareas y seguimiento de avance.
+- **Módulo de Metacognición:** Espacio de reflexión tras completar cada tarea para consolidar el aprendizaje.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Stack Tecnológico
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+- **Lenguaje:** TypeScript
+- **Base de Datos:** [Supabase](https://supabase.com/) (PostgreSQL + Realtime)
+- **IA Engine:** [Google Gemini 1.5 Flash](https://ai.google.dev/)
+- **Estilos:** CSS Modules (Diseño responsivo y visualmente atractivo)
+- **Iconos:** Lucide React
 
-## Learn More
+## 🏗️ Arquitectura de IA
 
-To learn more about Next.js, take a look at the following resources:
+El sistema utiliza prompts especializados según el modelo pedagógico seleccionado:
+- **Construbot (Constructivista):** Usa preguntas socráticas para fomentar el descubrimiento.
+- **Pensabot (Cognitivista):** Ayuda a estructurar planes y dividir problemas complejos.
+- **Neutro:** Proporciona apoyo directo y ejemplos claros.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Configuración Local
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/nvcvlvss/GENIAUTAS.git
+   cd GENIAUTAS/geniautas-app
+   ```
 
-## Deploy on Vercel
+2. **Instalar dependencias:**
+   ```bash
+   npm install
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Variables de entorno:**
+   Crea un archivo `.env.local` con las siguientes claves:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=tu_url_de_supabase
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_clave_anon_de_supabase
+   SUPABASE_SERVICE_ROLE_KEY=tu_service_role_key
+   GOOGLE_GENERATIVE_AI_API_KEY=tu_api_key_de_gemini
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Ejecutar el servidor de desarrollo:**
+   ```bash
+   npm run dev
+   ```
+
+## 🔒 Seguridad y Privacidad
+
+- **Moderación de IA:** Filtros de entrada para prevenir el uso de lenguaje inapropiado.
+- **Políticas RLS:** Aislamiento de datos mediante Row Level Security en Supabase para proteger la privacidad de las sesiones estudiantiles.
+- **Sin Datos Sensibles:** El sistema está diseñado para no almacenar información de identificación personal de los menores.
+
+---
+Desarrollado como parte del Proyecto PE para el Taller de Título 2025.
