@@ -1,0 +1,46 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-3);
+}
+
+.emoji {
+  font-size: 3rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 12px rgba(51, 199, 216, 0.35));
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: var(--text-h3);
+  line-height: var(--line-h3);
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.text {
+  margin: 0;
+  max-width: 28rem;
+  font-size: var(--text-body);
+  line-height: var(--line-body);
+  color: var(--color-text-secondary);
+}
+
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-circle);
+  color: var(--color-primary);
+  box-shadow: var(--glow-primary-sm);
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}

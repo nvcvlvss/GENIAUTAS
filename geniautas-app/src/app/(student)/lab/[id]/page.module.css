@@ -1,0 +1,89 @@
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-tiny);
+}
+
+.headings {
+  min-width: 0;
+}
+
+.labTitle {
+  font-family: var(--font-heading);
+  font-size: var(--text-h4);
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.sessionHint {
+  margin: var(--sp-1) 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  color: var(--color-text-tertiary);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.footerRow {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-end;
+  max-width: var(--chat-max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.inputGrow {
+  flex: 1;
+  min-width: 0;
+}
+
+.loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  padding: var(--sp-8);
+  color: var(--color-text-secondary);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+.welcomeMessage {
+  margin: 0;
+}
+
+.chatScroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-4) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+}

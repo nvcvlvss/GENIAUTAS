@@ -1,0 +1,46 @@
+.row {
+  display: flex;
+  width: 100%;
+}
+
+.rowStudent {
+  justify-content: flex-end;
+}
+
+.rowBot,
+.rowSystem {
+  justify-content: flex-start;
+}
+
+.bubble {
+  max-width: min(78%, 680px);
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--text-body);
+  line-height: var(--line-body);
+  color: var(--color-text);
+}
+
+.student {
+  background: var(--color-surface-2);
+}
+
+.bot {
+  background: var(--color-bg-elevated);
+}
+
+.system {
+  background: rgba(96, 165, 250, 0.12);
+  color: var(--color-text-secondary);
+  border: 1px solid rgba(96, 165, 250, 0.18);
+  box-shadow: none;
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  line-height: 1.4;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--sp-2);
+}

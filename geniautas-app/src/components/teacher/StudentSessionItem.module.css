@@ -1,0 +1,53 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.root:hover {
+  background-color: var(--color-surface-2);
+}
+
+.selected {
+  background-color: var(--color-surface-2);
+  border-color: var(--color-primary);
+}
+
+.inactive {
+  opacity: 0.6;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status {
+  font-size: var(--text-tiny);
+}
+
+.online {
+  color: var(--color-success);
+}
+
+.offline {
+  color: var(--color-text-tertiary);
+}
+
+.progress {
+  color: var(--color-progress);
+  font-weight: 500;
+}

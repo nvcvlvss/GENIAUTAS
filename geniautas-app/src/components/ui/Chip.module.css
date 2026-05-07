@@ -1,0 +1,50 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: var(--text-tiny);
+  font-weight: 600;
+  line-height: var(--line-tiny);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.draft {
+  background: rgba(96, 165, 250, 0.16);
+  color: #60a5fa;
+}
+
+.active {
+  background: rgba(51, 199, 216, 0.18);
+  color: #33c7d8;
+}
+
+.paused {
+  background: rgba(242, 169, 59, 0.18);
+  color: #f2a93b;
+}
+
+.closed {
+  background: rgba(147, 164, 191, 0.18);
+  color: #c7d2e3;
+}
+
+.pending {
+  background: rgba(245, 196, 81, 0.18);
+  color: #f5c451;
+}
+
+.approved {
+  background: rgba(120, 209, 124, 0.18);
+  color: #78d17c;
+}
+
+.rejected {
+  background: rgba(242, 107, 107, 0.18);
+  color: #f26b6b;
+}

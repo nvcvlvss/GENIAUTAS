@@ -1,0 +1,205 @@
+:root {
+  /* Colors */
+  --color-bg: #0b1220;
+  --color-bg-elevated: #14213a;
+  --color-surface-1: #1b2a44;
+  --color-surface-2: #243552;
+  --color-surface-3: #314666;
+  --color-primary: #33c7d8;
+  --color-primary-strong: #1fb4c7;
+  --color-progress: #f5c451;
+  --color-success: #78d17c;
+  --color-warning: #f2a93b;
+  --color-danger: #f26b6b;
+  --color-info: #60a5fa;
+  --color-text: #f5f7fb;
+  --color-text-secondary: #c7d2e3;
+  --color-text-tertiary: #93a4bf;
+  --color-border: rgba(199, 210, 227, 0.14);
+  --color-border-strong: rgba(199, 210, 227, 0.24);
+  --color-overlay: rgba(11, 18, 32, 0.72);
+
+  /* Typography (loaded fonts wired in layout.tsx) */
+  --font-heading: var(--font-heading-loaded), "Fredoka", system-ui, sans-serif;
+  --font-body: var(--font-body-loaded), "DM Sans", system-ui, sans-serif;
+  --font-mono: var(--font-mono-loaded), "Space Mono", ui-monospace, monospace;
+
+  --text-h1: 36px;
+  --text-h2: 28px;
+  --text-h3: 22px;
+  --text-h4: 18px;
+  --text-body: 16px;
+  --text-small: 14px;
+  --text-tiny: 12px;
+  --text-mono: 13px;
+
+  --line-h1: 1.2;
+  --line-h2: 1.25;
+  --line-h3: 1.3;
+  --line-h4: 1.35;
+  --line-body: 1.55;
+  --line-small: 1.5;
+  --line-tiny: 1.4;
+
+  /* Spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 16px;
+  --sp-4: 24px;
+  --sp-5: 32px;
+  --sp-6: 48px;
+  --sp-7: 64px;
+  --sp-8: 96px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  /* Shadow and glow */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.34);
+  --glow-primary-sm: 0 0 0 3px rgba(51, 199, 216, 0.18),
+    0 0 16px rgba(51, 199, 216, 0.18);
+  --glow-primary-md: 0 0 0 3px rgba(51, 199, 216, 0.24),
+    0 0 24px rgba(51, 199, 216, 0.24);
+  --glow-progress-sm: 0 0 16px rgba(245, 196, 81, 0.2);
+  --glow-progress-md: 0 0 24px rgba(245, 196, 81, 0.28);
+  --glow-danger-sm: 0 0 16px rgba(242, 107, 107, 0.22);
+
+  /* Layout */
+  --container-student: 980px;
+  --container-teacher: 1440px;
+  --panel-sidebar: 320px;
+  --panel-aside: 360px;
+  --chat-max-width: 760px;
+
+  /* Transitions */
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-fast: 140ms var(--ease-standard);
+  --transition-base: 220ms var(--ease-standard);
+  --transition-slow: 320ms var(--ease-standard);
+
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: var(--line-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(
+      ellipse 120% 80% at 50% -20%,
+      rgba(51, 199, 216, 0.12),
+      transparent 50%
+    ),
+    var(--color-bg);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--text-h1);
+  line-height: var(--line-h1);
+}
+
+h2 {
+  font-size: var(--text-h2);
+  line-height: var(--line-h2);
+}
+
+h3 {
+  font-size: var(--text-h3);
+  line-height: var(--line-h3);
+}
+
+h4 {
+  font-size: var(--text-h4);
+  line-height: var(--line-h4);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--glow-primary-sm);
+  border-radius: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Scrollbar (dark) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-3) var(--color-bg);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--color-surface-3);
+  border-radius: var(--radius-pill);
+}

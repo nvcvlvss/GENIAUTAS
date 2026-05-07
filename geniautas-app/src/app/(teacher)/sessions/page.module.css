@@ -1,0 +1,29 @@
+.page {
+  flex: 1;
+  padding: var(--sp-5) var(--sp-4);
+  max-width: var(--container-teacher);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.alert {
+  padding: var(--sp-3);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(242, 107, 107, 0.35);
+  background: rgba(242, 107, 107, 0.12);
+  color: var(--color-danger);
+  font-size: var(--text-small);
+  margin-bottom: var(--sp-4);
+}
+
+.loading {
+  padding: var(--sp-6);
+  text-align: center;
+  color: var(--color-text-secondary);
+}

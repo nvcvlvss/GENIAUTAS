@@ -1,0 +1,76 @@
+.root {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: var(--sp-2) 0;
+  color: var(--color-text-secondary);
+}
+
+.title {
+  font-size: var(--text-small);
+  line-height: var(--line-small);
+  font-weight: 500;
+}
+
+.marker {
+  width: 20px;
+  height: 20px;
+  margin-top: 0;
+  margin-left: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-3);
+  border: 2px solid var(--color-border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.pending .title {
+  color: var(--color-text-secondary);
+}
+
+.current {
+  color: var(--color-text);
+}
+
+.current .title {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.current .marker {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: var(--glow-primary-sm);
+}
+
+.done .title {
+  color: var(--color-text);
+}
+
+.done .marker {
+  background: var(--color-progress);
+  border-color: var(--color-progress);
+  box-shadow: var(--glow-progress-sm);
+}
+
+.blocked {
+  opacity: 0.45;
+}
+
+.blocked .title {
+  text-decoration: line-through;
+}
