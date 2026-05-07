@@ -1,4 +1,4 @@
-# 🚀 GENIAUTAS — Product & Dev Copilot
+# 🚀 GENIAUTAS - Proyecto de Título
 
 **Diseño e implementación de un recurso pedagógico para enseñar Prompt Engineering a niños en educación básica.**
 
