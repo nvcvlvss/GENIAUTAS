@@ -4,12 +4,15 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2, Save } from "lucide-react";
 import { createSession, getSchools } from "@/lib/services/session";
-import type { School, AgentType } from "@/types/database";
+import type { Database } from "@/types/database";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Input, Textarea, Select } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import styles from "./page.module.css";
+
+type School = Database["public"]["Tables"]["schools"]["Row"];
+type AgentType = Database["public"]["Enums"]["agent_type"];
 
 export default function NewSessionPage() {
   const router = useRouter();
@@ -29,7 +32,7 @@ export default function NewSessionPage() {
     async function loadData() {
       try {
         const data = await getSchools();
-        setSchools(data);
+        setSchools(data || []);
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : "Error al cargar colegios.");
       } finally {
@@ -59,7 +62,7 @@ export default function NewSessionPage() {
     try {
       await createSession({
         title,
-        grade,
+        grade: grade as any,
         school_id: schoolId,
         pedagogical_objective: objective,
         agent_config: agentConfig,
@@ -109,7 +112,7 @@ export default function NewSessionPage() {
                 required
               >
                 <option value="">Selecciona un colegio</option>
-                {schools.map((s) => (
+                {(schools || []).map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name}
                   </option>
@@ -122,12 +125,15 @@ export default function NewSessionPage() {
                 required
               >
                 <option value="">Selecciona un curso</option>
-                <option value="5° Básico">5° Básico</option>
-                <option value="6° Básico">6° Básico</option>
-                <option value="7° Básico">7° Básico</option>
-                <option value="8° Básico">8° Básico</option>
-                <option value="1° Medio">1° Medio</option>
-                <option value="2° Medio">2° Medio</option>
+                <option value="4_basico_a">4° Básico A</option>
+                <option value="4_basico_b">4° Básico B</option>
+                <option value="4_basico_c">4° Básico C</option>
+                <option value="5_basico_a">5° Básico A</option>
+                <option value="5_basico_b">5° Básico B</option>
+                <option value="5_basico_c">5° Básico C</option>
+                <option value="6_basico_a">6° Básico A</option>
+                <option value="6_basico_b">6° Básico B</option>
+                <option value="6_basico_c">6° Básico C</option>
               </Select>
             </div>
           </div>

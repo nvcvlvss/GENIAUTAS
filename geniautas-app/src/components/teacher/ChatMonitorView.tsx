@@ -57,7 +57,10 @@ export function ChatMonitorView({ studentSessionId, studentName }: ChatMonitorVi
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth"
+      });
     }
   }, [messages]);
 
@@ -71,25 +74,27 @@ export function ChatMonitorView({ studentSessionId, studentName }: ChatMonitorVi
   }
 
   return (
-    <div className={styles.root} ref={scrollRef}>
+    <div className={styles.root}>
       <div className={styles.header}>
         Monitoreando a: <strong>{studentName}</strong>
       </div>
-      <ChatView>
-        {messages.length === 0 ? (
-          <p className={styles.empty}>No hay mensajes en esta conversación todavía.</p>
-        ) : (
-          messages.map((m) => (
-            <ChatBubble
-              key={m.id}
-              variant={m.role === "assistant" ? "bot" : m.role}
-              meta={m.role === "assistant" ? "Agente" : studentName}
-            >
-              {m.content}
-            </ChatBubble>
-          ))
-        )}
-      </ChatView>
+      <div className={styles.chatArea} ref={scrollRef}>
+        <ChatView>
+          {messages.length === 0 ? (
+            <p className={styles.empty}>No hay mensajes en esta conversación todavía.</p>
+          ) : (
+            messages.map((m, i) => (
+              <ChatBubble
+                key={m.id || i}
+                variant={m.role === "assistant" ? "bot" : m.role}
+                meta={m.role === "assistant" ? "Agente" : studentName}
+              >
+                {m.content}
+              </ChatBubble>
+            ))
+          )}
+        </ChatView>
+      </div>
     </div>
   );
 }

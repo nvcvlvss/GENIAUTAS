@@ -87,6 +87,18 @@ export async function getSessionById(sessionId: string) {
   return data;
 }
 
+export async function getRoadmapTasks(sessionId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('roadmap_tasks')
+    .select('*')
+    .eq('session_id', sessionId)
+    .order('order_index', { ascending: true });
+
+  if (error) throw new Error(`FETCH_ROADMAP_ERROR: ${error.message}`);
+  return data;
+}
+
 export async function getSessions() {
   const supabase = await createClient();
   
@@ -95,7 +107,7 @@ export async function getSessions() {
 
   const { data, error } = await supabase
     .from('sessions')
-    .select('*, schools(name)')
+    .select('*, schools(name), profiles(full_name)')
     .eq('teacher_id', user.id)
     .order('created_at', { ascending: false });
 
@@ -125,7 +137,7 @@ export async function updateSessionStatus(sessionId: string, status: SessionStat
 export async function getAccessRequests(sessionId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from('access_requests')
+    .from('session_join_requests')
     .select('*')
     .eq('session_id', sessionId)
     .eq('status', 'pending')
@@ -141,17 +153,16 @@ export async function getStudentSessions(sessionId: string) {
     .from('student_sessions')
     .select(`
       *,
-      student_task_progress(count)
+      student_task_progress(is_completed)
     `)
     .eq('session_id', sessionId)
     .order('created_at', { ascending: true });
 
   if (error) throw new Error(`FETCH_STUDENT_SESSIONS_ERROR: ${error.message}`);
   
-  // Flatten the progress count
   return data.map(s => ({
     ...s,
-    completed_tasks_count: s.student_task_progress?.[0]?.count ?? 0
+    completed_tasks_count: (s.student_task_progress || []).filter((p: any) => p.is_completed).length
   }));
 }
 
@@ -170,9 +181,8 @@ export async function getAlerts(sessionId: string) {
 export async function approveAccessRequest(request: {
   id: string;
   session_id: string;
-  student_name: string;
-  student_last_name: string;
-  avatar_id: string;
+  student_candidate_name: string;
+  avatar_id?: string;
 }) {
   const supabase = await createClient();
 
@@ -181,8 +191,8 @@ export async function approveAccessRequest(request: {
     .from('student_sessions')
     .insert({
       session_id: request.session_id,
-      full_name: `${request.student_name} ${request.student_last_name}`,
-      avatar_id: request.avatar_id
+      full_name: request.student_candidate_name,
+      avatar_id: request.avatar_id || "1" // Default avatar if not in join request
     })
     .select()
     .single();
@@ -191,7 +201,7 @@ export async function approveAccessRequest(request: {
 
   // 2. Update Access Request
   const { error: updateError } = await supabase
-    .from('access_requests')
+    .from('session_join_requests')
     .update({ 
       status: 'approved',
       proposed_student_session_id: studentSession.id
@@ -206,7 +216,7 @@ export async function approveAccessRequest(request: {
 export async function rejectAccessRequest(requestId: string) {
   const supabase = await createClient();
   const { error } = await supabase
-    .from('access_requests')
+    .from('session_join_requests')
     .update({ status: 'rejected' })
     .eq('id', requestId);
 

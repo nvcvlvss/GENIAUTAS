@@ -17,18 +17,16 @@ export async function getActiveSessionsBySchool(schoolId: string) {
 
 export async function submitAccessRequest(formData: {
   session_id: string;
-  student_name: string;
-  student_last_name: string;
+  student_candidate_name: string;
   avatar_id: string;
 }) {
   const supabase = await createClient();
-  
+
   const { data, error } = await supabase
-    .from('access_requests')
+    .from('session_join_requests')
     .insert({
       session_id: formData.session_id,
-      student_name: formData.student_name,
-      student_last_name: formData.student_last_name,
+      student_candidate_name: formData.student_candidate_name,
       avatar_id: formData.avatar_id,
       status: 'pending'
     })

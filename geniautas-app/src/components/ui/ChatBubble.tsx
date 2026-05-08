@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import styles from "./ChatBubble.module.css";
 
 export type ChatBubbleVariant = "student" | "bot" | "system";
@@ -22,11 +24,21 @@ export function ChatBubble({ variant, children, meta, className }: ChatBubblePro
         ? styles.rowBot
         : styles.rowSystem;
 
+  const content = typeof children === "string" ? (
+    <div className={styles.markdown}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        {children}
+      </ReactMarkdown>
+    </div>
+  ) : (
+    children
+  );
+
   return (
     <div className={cx(styles.row, rowClass, className)}>
       <div className={cx(styles.bubble, styles[variant])}>
         {meta ? <div className={styles.meta}>{meta}</div> : null}
-        {children}
+        <div className={styles.content}>{content}</div>
       </div>
     </div>
   );

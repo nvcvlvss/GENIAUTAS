@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     );
 
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       systemInstruction: systemPrompt
     });
 
@@ -100,11 +100,15 @@ export async function POST(req: Request) {
     });
 
     // Assistant response
-    const { data: assistantMsg } = await supabase.from("messages").insert({
+    const { data: assistantMsg, error: saveError } = await supabase.from("messages").insert({
       student_session_id: studentSessionId,
       role: "assistant",
       content: responseText
     }).select().single();
+
+    if (saveError) {
+      console.error("SAVE_MESSAGE_ERROR:", saveError);
+    }
 
     return NextResponse.json({ 
       role: "assistant", 

@@ -2,9 +2,15 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
   background-color: var(--color-bg);
   padding: var(--sp-4);
+  overflow: hidden;
+}
+
+.chatArea {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: var(--sp-2);
 }
 
 .header {
@@ -15,6 +21,7 @@
   font-size: var(--text-small);
   color: var(--color-text-secondary);
   border-left: 4px solid var(--color-primary);
+  flex-shrink: 0;
 }
 
 .header strong {

@@ -5,6 +5,7 @@ import type { SessionStatus } from "@/types/database";
 import { Card } from "@/components/ui/Card";
 import { Chip, type ChipStatus } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
+import { AGENT_LABEL, GRADE_LABELS } from "@/lib/constants";
 import styles from "./SessionCard.module.css";
 
 export type SessionListItem = {
@@ -14,6 +15,7 @@ export type SessionListItem = {
   status: SessionStatus;
   agent_config: string;
   schools?: { name: string } | null;
+  profiles?: { full_name: string | null } | null;
 };
 
 const STATUS_TO_CHIP: Record<SessionStatus, ChipStatus> = {
@@ -21,12 +23,6 @@ const STATUS_TO_CHIP: Record<SessionStatus, ChipStatus> = {
   active: "active",
   paused: "paused",
   closed: "closed",
-};
-
-const AGENT_LABEL: Record<string, string> = {
-  neutro: "Neutro",
-  constructivista: "Construbot",
-  cognitivista: "Pensabot",
 };
 
 type SessionCardProps = {
@@ -47,6 +43,8 @@ export function SessionCard({
   const busy = updatingId === session.id;
   const agentLabel =
     AGENT_LABEL[session.agent_config] ?? session.agent_config;
+  const gradeLabel = 
+    GRADE_LABELS[session.grade] ?? session.grade;
 
   return (
     <Card padding="default" className={styles.root}>
@@ -56,8 +54,8 @@ export function SessionCard({
           <Chip status={STATUS_TO_CHIP[session.status]} />
         </div>
         <p className={styles.meta}>
-          {session.schools?.name ?? "Colegio"} · {session.grade} · IA:{" "}
-          {agentLabel}
+          {session.schools?.name ?? "Colegio"} · {gradeLabel} · IA: {agentLabel}
+          {session.profiles?.full_name ? ` · Prof. ${session.profiles.full_name}` : ""}
         </p>
         <div className={styles.code} aria-label="ID de sesión">
           Sesión: {session.id}

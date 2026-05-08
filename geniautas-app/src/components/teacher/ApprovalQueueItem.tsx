@@ -3,6 +3,7 @@
 import { UserCheck, UserX } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
+import type { SessionJoinRequest } from "@/types/database";
 import styles from "./ApprovalQueueItem.module.css";
 
 const AVATAR_EMOJI: Record<string, string> = {
@@ -14,13 +15,7 @@ const AVATAR_EMOJI: Record<string, string> = {
   "6": "🐙",
 };
 
-export type AccessRequestRow = {
-  id: string;
-  student_name: string;
-  student_last_name: string;
-  avatar_id: string;
-  created_at: string;
-};
+export type AccessRequestRow = SessionJoinRequest;
 
 type ApprovalQueueItemProps = {
   request: AccessRequestRow;
@@ -38,16 +33,16 @@ export function ApprovalQueueItem({
   onReject,
 }: ApprovalQueueItemProps) {
   const busy = pendingAction !== null;
-  const emoji = AVATAR_EMOJI[request.avatar_id] ?? "👤";
+  const emoji = AVATAR_EMOJI[request.avatar_id || ""] ?? "👤";
   const time = new Date(request.created_at).toLocaleTimeString();
 
   return (
     <div className={styles.root}>
       <div className={styles.left}>
-        <Avatar size={48} emoji={emoji} label={`Avatar de ${request.student_name}`} />
+        <Avatar size={48} emoji={emoji} label={`Avatar de ${request.student_candidate_name}`} />
         <div>
           <div className={styles.name}>
-            {request.student_name} {request.student_last_name}
+            {request.student_candidate_name}
           </div>
           <div className={styles.meta}>
             {courseLabel ? <span>{courseLabel} · </span> : null}

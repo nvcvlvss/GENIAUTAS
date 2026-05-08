@@ -11,6 +11,7 @@ import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Chip } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Avatar } from "@/components/ui/Avatar";
 import { 
   getStudentSession, 
   getRoadmapTasks, 
@@ -19,7 +20,17 @@ import {
   updateTaskProgress
 } from "@/lib/services/student";
 import { ReflectionModal } from "@/components/student/ReflectionModal";
+import { GRADE_LABELS } from "@/lib/constants";
 import styles from "./page.module.css";
+
+const AVATAR_EMOJI: Record<string, string> = {
+  "1": "🦊",
+  "2": "🐨",
+  "3": "🦁",
+  "4": "🐯",
+  "5": "🐼",
+  "6": "🐙",
+};
 
 export default function StudentLabPage() {
   const params = useParams();
@@ -43,7 +54,7 @@ export default function StudentLabPage() {
   const refreshRoadmap = async (tasksData: any[], studentSessionId: string) => {
     try {
       const progress = await getStudentProgress(studentSessionId);
-      const completedIds = new Set(progress.map(p => p.task_id));
+      const completedIds = new Set((progress || []).map(p => p.task_id));
       
       let foundCurrent = false;
       const updatedTasks = tasksData.map((t: any) => {
@@ -79,22 +90,22 @@ export default function StudentLabPage() {
         ]);
 
         setStudentSession(sessionData);
-        await refreshRoadmap(tasksData, studentSessionId);
-        setMessages(historyData);
+        await refreshRoadmap(tasksData || [], studentSessionId);
+        setMessages(historyData || []);
       } catch (err: any) {
-        setError(err.message);
+        setError(err.message || "Error al cargar los datos");
       } finally {
         setLoading(false);
       }
     }
-    init();
+    void init();
   }, [sessionId, router]);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, sending]);
 
   const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -153,7 +164,7 @@ export default function StudentLabPage() {
       await updateTaskProgress(studentSession.id, completingTaskId, text);
       
       const tasksData = await getRoadmapTasks(sessionId);
-      await refreshRoadmap(tasksData, studentSession.id);
+      await refreshRoadmap(tasksData || [], studentSession.id);
       
       setMessages(prev => [...prev, { 
         role: "system", 
@@ -185,14 +196,18 @@ export default function StudentLabPage() {
     );
   }
 
-  if (error) {
+  if (error || !studentSession) {
     return (
       <div className={styles.loading}>
-        <p>Error: {error}</p>
+        <p>Error: {error || "No se pudo cargar la sesión"}</p>
         <Button onClick={() => window.location.reload()}>Reintentar</Button>
       </div>
     );
   }
+
+  const activeTask = tasks.find(t => t.id === completingTaskId);
+  const emoji = AVATAR_EMOJI[studentSession.avatar_id] ?? "👤";
+  const completedCount = tasks.filter(t => t.state === "done").length;
 
   const header = (
     <>
@@ -202,12 +217,12 @@ export default function StudentLabPage() {
         </div>
         <div className={styles.headings}>
           <h1 className={styles.labTitle}>{studentSession.full_name}</h1>
-          <p className={styles.sessionHint}>{studentSession.sessions.title}</p>
+          <p className={styles.sessionHint}>{studentSession.sessions?.title || "Laboratorio"}</p>
         </div>
       </div>
       <div className={styles.headerRight}>
-        <Chip status={studentSession.sessions.status}>
-          {studentSession.sessions.status === "active" ? "En curso" : "Pausada"}
+        <Chip status={studentSession.sessions?.status || "paused"}>
+          {studentSession.sessions?.status === "active" ? "En curso" : "Pausada"}
         </Chip>
         <Button type="button" variant="ghost" size="sm" onClick={handleExit}>
           <LogOut size={18} aria-hidden />
@@ -222,11 +237,9 @@ export default function StudentLabPage() {
       <ChatView>
         {messages.length === 0 && (
           <ChatBubble variant="bot" meta="Agente pedagógico">
-            <p className={styles.welcomeMessage}>
-              ¡Hola! Soy tu asistente para este laboratorio. {studentSession.sessions.pedagogical_objective}
-              <br /><br />
-              ¿En qué puedo ayudarte para comenzar con la primera tarea?
-            </p>
+            ¡Hola! Soy tu asistente para este laboratorio. {studentSession.sessions?.pedagogical_objective}
+            
+            ¿En qué puedo ayudarte para comenzar con la primera tarea?
           </ChatBubble>
         )}
         {messages.map((m: any, i: number) => (
@@ -240,21 +253,47 @@ export default function StudentLabPage() {
         ))}
         {sending && (
           <ChatBubble variant="bot" meta="Agente">
-            <Loader2 className={styles.spin} size={16} />
+            <div className={styles.thinking}>
+              <Loader2 className={styles.spinThinking} size={16} />
+              <span>Geniauta está analizando...</span>
+            </div>
           </ChatBubble>
         )}
       </ChatView>
     </div>
   );
 
-  const activeTask = tasks.find(t => t.id === completingTaskId);
-
   const aside = (
-    <Roadmap 
-      title="Mi camino" 
-      tasks={tasks} 
-      onCompleteTask={handleCompleteTask} 
-    />
+    <div className={styles.asideContent}>
+      <div className={styles.studentInfo}>
+        <Avatar size={64} emoji={emoji} />
+        <div className={styles.studentMeta}>
+          <h2 className={styles.studentName}>{studentSession.full_name}</h2>
+          <p className={styles.studentGrade}>{GRADE_LABELS[studentSession.sessions?.grade] || studentSession.sessions?.grade || ""}</p>
+        </div>
+      </div>
+      
+      <div className={styles.divider} />
+
+      <Roadmap 
+        title="Mi camino" 
+        tasks={tasks} 
+        onCompleteTask={handleCompleteTask} 
+      />
+      
+      <div className={styles.asideFooter}>
+        <div className={styles.progressStat}>
+          <span className={styles.statLabel}>Progreso total</span>
+          <span className={styles.statValue}>{completedCount} / {tasks.length}</span>
+        </div>
+        <div className={styles.progressBar}>
+          <div 
+            className={styles.progressFill} 
+            style={{ width: `${(completedCount / (tasks.length || 1)) * 100}%` }}
+          />
+        </div>
+      </div>
+    </div>
   );
 
   const footer = (
@@ -262,10 +301,10 @@ export default function StudentLabPage() {
       <div className={styles.inputGrow}>
         <Input
           name="message"
-          placeholder={studentSession.sessions.status === "active" ? "Escribe tu mensaje aquí…" : "Sesión pausada"}
+          placeholder={studentSession.sessions?.status === "active" ? "Escribe tu mensaje aquí…" : "Sesión pausada"}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          disabled={sending || studentSession.sessions.status !== "active"}
+          disabled={sending || studentSession.sessions?.status !== "active"}
           aria-label="Mensaje"
           autoComplete="off"
         />
@@ -274,7 +313,7 @@ export default function StudentLabPage() {
         type="submit" 
         variant="primary" 
         size="md" 
-        disabled={!inputValue.trim() || sending || studentSession.sessions.status !== "active"}
+        disabled={!inputValue.trim() || sending || studentSession.sessions?.status !== "active"}
         loading={sending}
       >
         <Send size={18} aria-hidden />

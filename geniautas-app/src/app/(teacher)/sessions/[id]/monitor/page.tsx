@@ -14,12 +14,9 @@ import {
   getSessionById,
   updateSessionStatus,
 } from "@/lib/services/session";
-import type { SessionStatus } from "@/types/database";
+import type { Database, SessionStatus } from "@/types/database";
 import { TeacherShell } from "@/components/teacher/TeacherShell";
-import {
-  ApprovalQueueItem,
-  type AccessRequestRow,
-} from "@/components/teacher/ApprovalQueueItem";
+import { ApprovalQueueItem } from "@/components/teacher/ApprovalQueueItem";
 import {
   StudentSessionItem,
   type StudentSessionRow,
@@ -29,6 +26,7 @@ import { AlertCard } from "@/components/teacher/AlertCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { Chip, type ChipStatus } from "@/components/ui/Chip";
+import { GRADE_LABELS } from "@/lib/constants";
 import styles from "./page.module.css";
 
 const STATUS_CHIP: Record<SessionStatus, ChipStatus> = {
@@ -37,6 +35,8 @@ const STATUS_CHIP: Record<SessionStatus, ChipStatus> = {
   paused: "paused",
   closed: "closed",
 };
+
+type AccessRequestRow = Database["public"]["Tables"]["session_join_requests"]["Row"];
 
 export default function SessionMonitorPage() {
   const params = useParams();
@@ -86,17 +86,20 @@ export default function SessionMonitorPage() {
     void init();
 
     const requestChannel = supabase
-      .channel("access_requests_changes")
+      .channel("session_join_requests_changes")
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
-          table: "access_requests",
+          table: "session_join_requests",
           filter: `session_id=eq.${sessionId}`,
         },
         (payload) => {
-          setRequests((current) => [...current, payload.new as AccessRequestRow]);
+          setRequests((current) => [
+            ...current,
+            payload.new as AccessRequestRow,
+          ]);
         },
       )
       .subscribe();
@@ -111,10 +114,14 @@ export default function SessionMonitorPage() {
           table: "student_sessions",
           filter: `session_id=eq.${sessionId}`,
         },
-        (payload) => {
+        (payload: any) => {
           setStudents((current) => [
             ...current,
-            { ...payload.new, completed_tasks_count: 0 } as StudentSessionRow,
+            { 
+              ...payload.new, 
+              is_active: payload.new.is_active ?? true,
+              completed_tasks_count: 0 
+            } as StudentSessionRow,
           ]);
         },
       )
@@ -126,11 +133,11 @@ export default function SessionMonitorPage() {
           table: "student_sessions",
           filter: `session_id=eq.${sessionId}`,
         },
-        (payload) => {
+        (payload: any) => {
           setStudents((current) =>
             current.map((s) =>
               s.id === payload.new.id
-                ? { ...s, ...payload.new }
+                ? { ...s, ...payload.new, is_active: payload.new.is_active ?? s.is_active }
                 : s,
             ),
           );
@@ -187,7 +194,12 @@ export default function SessionMonitorPage() {
     setPending({ id: request.id, action: "approve" });
     setNotice(null);
     try {
-      await approveAccessRequest(request);
+      await approveAccessRequest({
+        id: request.id,
+        session_id: request.session_id,
+        student_candidate_name: request.student_candidate_name,
+        avatar_id: request.avatar_id || undefined
+      });
       setRequests((current) => current.filter((r) => r.id !== request.id));
     } catch (err: unknown) {
       setNotice(
@@ -282,7 +294,7 @@ export default function SessionMonitorPage() {
               <ApprovalQueueItem
                 key={request.id}
                 request={request}
-                courseLabel={sessionGrade ? `Curso ${sessionGrade}` : undefined}
+                courseLabel={sessionGrade ? (GRADE_LABELS[sessionGrade] || sessionGrade) : undefined}
                 pendingAction={
                   pending?.id === request.id ? pending.action : null
                 }

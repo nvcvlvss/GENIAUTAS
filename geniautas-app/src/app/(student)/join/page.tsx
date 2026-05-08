@@ -9,14 +9,17 @@ import {
   getActiveSessionsBySchool,
   submitAccessRequest,
 } from "@/lib/services/student";
-import type { School } from "@/types/database";
+import type { Database } from "@/types/database";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Chip } from "@/components/ui/Chip";
 import { AvatarPicker } from "@/components/student/AvatarPicker";
 import { WaitState } from "@/components/student/WaitState";
+import { GRADE_LABELS } from "@/lib/constants";
 import styles from "./page.module.css";
+
+type School = Database["public"]["Tables"]["schools"]["Row"];
 
 const AVATARS = [
   { id: "1", emoji: "🦊" },
@@ -31,9 +34,7 @@ const STEPS = ["Colegio", "Clase", "Identidad", "Espera"];
 
 export default function JoinSessionPage() {
   const [schools, setSchools] = useState<School[]>([]);
-  const [activeSessions, setActiveSessions] = useState<
-    { id: string; title: string; grade: string }[]
-  >([]);
+  const [activeSessions, setActiveSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState(1);
@@ -41,14 +42,14 @@ export default function JoinSessionPage() {
 
   const [selectedSchool, setSelectedSchool] = useState("");
   const [selectedSession, setSelectedSession] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [studentName, setStudentName] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState("1");
   const [requestId, setRequestId] = useState<string | null>(null);
 
   const router = useRouter();
   const supabase = createClient();
 
+  // Suscripción Realtime para detectar la aprobación del docente
   useEffect(() => {
     if (step === 4 && requestId) {
       const channel = supabase
@@ -58,19 +59,25 @@ export default function JoinSessionPage() {
           {
             event: "UPDATE",
             schema: "public",
-            table: "access_requests",
+            table: "session_join_requests",
             filter: `id=eq.${requestId}`,
           },
           (payload) => {
+            // El docente ha aprobado la solicitud
             if (payload.new.status === "approved") {
-              sessionStorage.setItem(
-                "geniautas_student_session",
-                payload.new.proposed_student_session_id,
-              );
-              router.push(`/lab/${selectedSession}`);
-            } else if (payload.new.status === "rejected") {
+              const studentSessionId = payload.new.proposed_student_session_id;
+              if (studentSessionId) {
+                sessionStorage.setItem(
+                  "geniautas_student_session",
+                  studentSessionId,
+                );
+                router.push(`/lab/${selectedSession}`);
+              }
+            } 
+            // El docente ha rechazado la solicitud
+            else if (payload.new.status === "rejected") {
               setError(
-                "Tu profesor no pudo aceptar el ingreso esta vez. Revisa tus datos o pide ayuda en el aula.",
+                "Tu profesor no pudo aceptar el ingreso esta vez. Revisa tu nombre o pide ayuda en el aula.",
               );
               setStep(3);
             }
@@ -88,12 +95,10 @@ export default function JoinSessionPage() {
     async function loadSchools() {
       try {
         const data = await getSchools();
-        setSchools(data);
+        setSchools(data || []);
       } catch (err: unknown) {
         setError(
-          err instanceof Error
-            ? err.message
-            : "No pudimos cargar los colegios. Intenta más tarde.",
+          "No pudimos cargar los colegios. Intenta más tarde.",
         );
       } finally {
         setLoading(false);
@@ -108,13 +113,11 @@ export default function JoinSessionPage() {
     setError(null);
     try {
       const sessions = await getActiveSessionsBySchool(id);
-      setActiveSessions(sessions);
+      setActiveSessions(sessions || []);
       setStep(2);
     } catch (err: unknown) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "No pudimos cargar las clases activas.",
+        "No pudimos cargar las clases activas en este momento.",
       );
     } finally {
       setLoading(false);
@@ -123,22 +126,21 @@ export default function JoinSessionPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!studentName.trim()) return;
+
     setSubmitting(true);
     setError(null);
     try {
       const request = await submitAccessRequest({
         session_id: selectedSession,
-        student_name: firstName,
-        student_last_name: lastName,
+        student_candidate_name: studentName.trim(),
         avatar_id: selectedAvatar,
       });
       setRequestId(request.id);
       setStep(4);
     } catch (err: unknown) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "No pudimos enviar tu solicitud. Intenta otra vez.",
+        "Hubo un problema al enviar tu solicitud. ¡Inténtalo de nuevo!",
       );
     } finally {
       setSubmitting(false);
@@ -176,7 +178,7 @@ export default function JoinSessionPage() {
             </div>
             <h1 className={styles.title}>¡Hola, Geniauta!</h1>
             <p className={styles.subtitle}>
-              Únete a tu laboratorio guiado con IA, paso a paso.
+              Únete a tu laboratorio paso a paso.
             </p>
           </div>
 
@@ -186,7 +188,7 @@ export default function JoinSessionPage() {
             <div className={styles.carouselSection}>
               <h2 className={styles.sectionTitle}>Selecciona tu colegio</h2>
               <div className={styles.carousel}>
-                {schools.map((school) => (
+                {(schools || []).map((school) => (
                   <div key={school.id} className={styles.carouselItem}>
                     <Card
                       interactive
@@ -218,11 +220,10 @@ export default function JoinSessionPage() {
                 ← Volver
               </button>
               <h2 className={styles.sectionTitle}>¿A qué clase te unes?</h2>
-              {activeSessions.length === 0 ? (
+              {(activeSessions || []).length === 0 ? (
                 <p className={styles.empty}>
                   No hay clases activas en este colegio ahora. Espera a que tu
-                  profesor inicie la actividad o revisa si elegiste el colegio
-                  correcto.
+                  profesor inicie la actividad.
                 </p>
               ) : (
                 activeSessions.map((session) => (
@@ -239,7 +240,9 @@ export default function JoinSessionPage() {
                       <BookOpen size={28} color="var(--color-primary)" aria-hidden />
                       <div>
                         <p className={styles.sessionTitle}>{session.title}</p>
-                        <p className={styles.sessionMeta}>Curso: {session.grade}</p>
+                        <p className={styles.sessionMeta}>
+                          Curso: {GRADE_LABELS[session.grade] || session.grade}
+                        </p>
                       </div>
                     </div>
                   </Card>
@@ -257,23 +260,15 @@ export default function JoinSessionPage() {
               >
                 ← Volver
               </button>
-              <h2 className={styles.sectionTitle}>¡Casi listo! Identifícate</h2>
+              <h2 className={styles.sectionTitle}>¡Casi listo!</h2>
 
               <Input
-                label="Nombre"
-                placeholder="Ej: Diego"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                label="Tu nombre"
+                placeholder="Escribe tu nombre aquí..."
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
                 required
-                autoComplete="given-name"
-              />
-              <Input
-                label="Apellido"
-                placeholder="Ej: Pérez"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-                autoComplete="family-name"
+                autoComplete="name"
               />
 
               <div className={styles.avatarBlock}>
@@ -293,7 +288,7 @@ export default function JoinSessionPage() {
                 loading={submitting}
               >
                 {!submitting ? <Send size={20} aria-hidden /> : null}
-                <span>Entrar a clase</span>
+                <span>¡Pedir ingreso!</span>
               </Button>
             </form>
           )}
@@ -304,10 +299,10 @@ export default function JoinSessionPage() {
               chip={<Chip status="pending" />}
               description={
                 <>
-                  Tu profesor debe aprobar tu ingreso.
+                  Esperando a que tu profesor te deje entrar...
                   <br />
                   <strong>
-                    Quédate en esta pantalla: entrarás solo cuando te acepten.
+                    No cierres esta ventana. Entrarás automáticamente.
                   </strong>
                 </>
               }

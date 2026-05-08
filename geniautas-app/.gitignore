@@ -39,6 +39,9 @@ yarn-error.log*
 # gemini
 .gemini/
 
+# supabase temp
+supabase/.temp/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

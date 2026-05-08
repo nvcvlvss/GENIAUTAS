@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { getSessions, updateSessionStatus } from "@/lib/services/session";
-import type { SessionStatus } from "@/types/database";
+import type { Database } from "@/types/database";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SessionCard, type SessionListItem } from "@/components/teacher/SessionCard";
 import styles from "./page.module.css";
+
+type SessionStatus = Database["public"]["Enums"]["session_status"];
 
 export default function SessionsPage() {
   const [sessions, setSessions] = useState<SessionListItem[]>([]);
@@ -77,7 +79,7 @@ export default function SessionsPage() {
       {error ? <div className={styles.alert}>{error}</div> : null}
       {actionError ? <div className={styles.alert}>{actionError}</div> : null}
 
-      {sessions.length === 0 ? (
+      {(sessions || []).length === 0 ? (
         <EmptyState
           title="Aún no tienes sesiones"
           description="Crea tu primera sesión para que tus estudiantes puedan unirse con un flujo guiado y seguro."
@@ -89,7 +91,7 @@ export default function SessionsPage() {
         />
       ) : (
         <div className={styles.list}>
-          {sessions.map((session) => (
+          {(sessions || []).map((session) => (
             <SessionCard
               key={session.id}
               session={session}
