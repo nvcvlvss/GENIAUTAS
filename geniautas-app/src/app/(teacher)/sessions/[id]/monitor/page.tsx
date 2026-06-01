@@ -174,10 +174,36 @@ export default function SessionMonitorPage() {
           setStudents((current) =>
             current.map((s) =>
               s.id === payload.new.student_session_id
-                ? { ...s, completed_tasks_count: (s.completed_tasks_count || 0) + 1 }
+                ? { 
+                    ...s, 
+                    completed_tasks_count: (s.completed_tasks_count || 0) + 1 
+                  }
                 : s,
             ),
           );
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "student_task_progress",
+        },
+        (payload) => {
+          // If a task is marked as uncompleted (unlikely but safe)
+          if (payload.new.is_completed === false) {
+             setStudents((current) =>
+              current.map((s) =>
+                s.id === payload.new.student_session_id
+                  ? { 
+                      ...s, 
+                      completed_tasks_count: Math.max(0, (s.completed_tasks_count || 0) - 1) 
+                    }
+                  : s,
+              ),
+            );
+          }
         },
       )
       .subscribe();

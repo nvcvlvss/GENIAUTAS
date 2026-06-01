@@ -62,7 +62,7 @@ export default function LoginPage() {
               fullWidth
               loading={loading}
             >
-              {!loading ? <LogIn size={20} aria-hidden /> : null}
+              <LogIn size={20} aria-hidden />
               <span>Iniciar sesión</span>
             </Button>
           </form>

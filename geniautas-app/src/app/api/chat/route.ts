@@ -84,11 +84,34 @@ export async function POST(req: Request) {
           parts: [{ text: m.content }],
         })),
       generationConfig: {
-        maxOutputTokens: 500,
+        maxOutputTokens: 2048,
       },
     });
 
-    const result = await chat.sendMessage(message);
+    // 5.1. Execute with automatic retries for 503 errors
+    let result;
+    let retries = 0;
+    const MAX_RETRIES = 3;
+    const INITIAL_DELAY = 1000; // 1 second
+
+    while (true) {
+      try {
+        result = await chat.sendMessage(message);
+        break; // Success!
+      } catch (error: any) {
+        retries++;
+        // If it's a 503 and we have retries left, wait and try again
+        if (error.status === 503 && retries <= MAX_RETRIES) {
+          const delay = INITIAL_DELAY * Math.pow(2, retries - 1);
+          console.warn(`Gemini API 503: High demand. Retry ${retries}/${MAX_RETRIES} in ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
+        // If other error or no retries left, throw it
+        throw error;
+      }
+    }
+
     const responseText = result.response.text();
 
     // 6. Save messages to DB

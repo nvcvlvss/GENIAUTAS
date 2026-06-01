@@ -90,7 +90,10 @@ export async function updateTaskProgress(
       completed_at: new Date().toISOString()
     }, { onConflict: 'student_session_id,task_id' });
 
-  if (error) throw new Error(`UPDATE_PROGRESS_ERROR: ${error.message}`);
+  if (error) {
+    console.error("UPSERT_PROGRESS_ERROR:", error);
+    throw new Error(`UPDATE_PROGRESS_ERROR: ${error.message}`);
+  }
 }
 
 export async function getStudentProgress(studentSessionId: string) {

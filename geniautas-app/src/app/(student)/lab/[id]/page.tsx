@@ -10,8 +10,8 @@ import type { RoadmapTaskView } from "@/components/student/Roadmap";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Chip } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Avatar } from "@/components/ui/Avatar";
+import { PromptInputBox } from "@/components/ui/ai-prompt-box";
 import { 
   getStudentSession, 
   getRoadmapTasks, 
@@ -103,17 +103,18 @@ export default function StudentLabPage() {
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
     }
   }, [messages, sending]);
 
-  const handleSend = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (!inputValue.trim() || sending || studentSession?.sessions?.status !== "active") return;
+  const handleSendDirect = async (message: string, files?: File[]) => {
+    if ((!message.trim() && (!files || files.length === 0)) || sending || studentSession?.sessions?.status !== "active") return;
 
-    const userMsg = { role: "user", content: inputValue, id: Date.now().toString() };
+    const userMsg = { role: "user", content: message, id: Date.now().toString() };
     setMessages(prev => [...prev, userMsg]);
-    setInputValue("");
     setSending(true);
 
     try {
@@ -121,7 +122,7 @@ export default function StudentLabPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: userMsg.content,
+          message: message,
           studentSessionId: studentSession.id,
           sessionId: sessionId
         })
@@ -297,29 +298,15 @@ export default function StudentLabPage() {
   );
 
   const footer = (
-    <form className={styles.footerRow} onSubmit={handleSend}>
-      <div className={styles.inputGrow}>
-        <Input
-          name="message"
+    <div className={styles.footerRow}>
+      <div className="p-6 pb-12 max-w-5xl mx-auto w-full">
+        <PromptInputBox
           placeholder={studentSession.sessions?.status === "active" ? "Escribe tu mensaje aquí…" : "Sesión pausada"}
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          disabled={sending || studentSession.sessions?.status !== "active"}
-          aria-label="Mensaje"
-          autoComplete="off"
+          isLoading={sending}
+          onSend={handleSendDirect}
         />
       </div>
-      <Button 
-        type="submit" 
-        variant="primary" 
-        size="md" 
-        disabled={!inputValue.trim() || sending || studentSession.sessions?.status !== "active"}
-        loading={sending}
-      >
-        <Send size={18} aria-hidden />
-        Enviar
-      </Button>
-    </form>
+    </div>
   );
 
   return (

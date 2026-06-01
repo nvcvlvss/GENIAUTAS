@@ -7,7 +7,7 @@
     "header header"
     "main aside"
     "footer footer";
-  background: var(--color-bg);
+  background: transparent;
   color: var(--color-text);
 }
 
@@ -21,6 +21,9 @@
   justify-content: space-between;
   gap: var(--sp-3);
   flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .main {
@@ -39,13 +42,24 @@
   min-height: 0;
   background: var(--color-bg-elevated);
   overflow: hidden;
+  position: sticky;
+  top: 73px; /* Approximate header height */
+  height: calc(100dvh - 73px - 82px); /* Calc based on header and approximate footer */
+}
+
+@media (min-width: 901px) {
+  .aside {
+    height: calc(100dvh - 73px); /* When footer is inside or differently placed */
+    position: sticky;
+    top: 73px;
+  }
 }
 
 .footer {
   grid-area: footer;
   padding: var(--sp-3) var(--sp-4);
-  background: var(--color-bg-elevated);
-  border-top: 1px solid var(--color-border);
+  background: transparent;
+  border-top: none;
   position: sticky;
   bottom: 0;
   z-index: 10;
