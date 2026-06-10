@@ -89,3 +89,35 @@
   padding: var(--sp-6);
   color: var(--color-text-secondary);
 }
+
+.mobileStudentSelector {
+  display: none !important;
+}
+
+@media (max-width: 1100px) {
+  .mobileStudentSelector {
+    display: block !important;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--color-surface-1);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mobileSelectorLabel {
+    font-size: var(--text-tiny);
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .mobileSelectControl {
+    width: 100%;
+    padding: var(--sp-2);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-size: var(--text-small);
+    outline: none;
+  }
+}

@@ -40,7 +40,7 @@ export function StudentSessionItem({
       className={`${styles.root} ${isSelected ? styles.selected : ""} ${!student.is_active ? styles.inactive : ""}`}
       onClick={onClick}
     >
-      <Avatar size={40} emoji={emoji} label={`Avatar de ${student.full_name}`} />
+      <Avatar size={48} emoji={emoji} label={`Avatar de ${student.full_name}`} />
       <div className={styles.info}>
         <div className={styles.name}>{student.full_name}</div>
         <div className={styles.status}>

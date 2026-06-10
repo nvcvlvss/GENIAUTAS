@@ -48,6 +48,7 @@ export default function StudentLabPage() {
   const [showReflection, setShowReflection] = useState(false);
   const [completingTaskId, setCompletingTaskId] = useState<string | null>(null);
   const [reflectionBusy, setReflectionBusy] = useState(false);
+  const [isRoadmapOpen, setIsRoadmapOpen] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -222,6 +223,15 @@ export default function StudentLabPage() {
         </div>
       </div>
       <div className={styles.headerRight}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setIsRoadmapOpen((prev) => !prev)}
+          className={styles.roadmapToggle}
+        >
+          📋 Tareas
+        </Button>
         <Chip status={studentSession.sessions?.status || "paused"}>
           {studentSession.sessions?.status === "active" ? "En curso" : "Pausada"}
         </Chip>
@@ -311,7 +321,14 @@ export default function StudentLabPage() {
 
   return (
     <>
-      <StudentShell header={header} main={main} aside={aside} footer={footer} />
+      <StudentShell
+        header={header}
+        main={main}
+        aside={aside}
+        footer={footer}
+        asideOpen={isRoadmapOpen}
+        onAsideClose={() => setIsRoadmapOpen(false)}
+      />
       {showReflection && activeTask && (
         <ReflectionModal
           taskTitle={activeTask.title}

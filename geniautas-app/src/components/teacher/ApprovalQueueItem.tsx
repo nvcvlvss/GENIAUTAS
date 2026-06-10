@@ -63,7 +63,7 @@ export function ApprovalQueueItem({
         </Button>
         <Button
           type="button"
-          variant="success"
+          variant="primary"
           size="sm"
           disabled={busy}
           loading={pendingAction === "approve"}

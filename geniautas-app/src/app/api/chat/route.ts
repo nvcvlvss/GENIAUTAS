@@ -1,37 +1,44 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { createClient } from "@/lib/supabase/server";
 import { validateInput } from "@/lib/ai/moderation";
-import { getSystemPrompt } from "@/lib/ai/prompts";
+import { getSystemPrompt } from "@/lib/prompt-loader";
 
 export async function POST(req: Request) {
   try {
-    const { message, studentSessionId, sessionId } = await req.json();
+    const body = await req.json();
+    const { message, messages } = body;
+    
+    // Suportar tanto studentId como studentSessionId de forma segura
+    const studentSessionId = body.studentId || body.studentSessionId;
+    const sessionId = body.sessionId;
 
-    if (!message || !studentSessionId || !sessionId) {
+    if (!studentSessionId || !sessionId) {
       return NextResponse.json({ error: "MISSING_FIELDS" }, { status: 400 });
     }
 
-    // 1. Validate Input (Moderation)
-    const moderation = validateInput(message);
-    if (!moderation.isValid) {
-      const supabase = await createClient();
-      await supabase.from("alerts").insert({
-        session_id: sessionId,
-        student_session_id: studentSessionId,
-        type: "security",
-        content_snapshot: `Mensaje bloqueado: "${message}" (Palabra: ${moderation.word})`
-      });
+    // 1. Validar el mensaje del alumno usando el validador de moderación existente (si se envió un mensaje)
+    if (message) {
+      const moderation = validateInput(message);
+      if (!moderation.isValid) {
+        const supabase = await createClient();
+        await supabase.from("alerts").insert({
+          session_id: sessionId,
+          student_session_id: studentSessionId,
+          type: "security",
+          content_snapshot: `Mensaje bloqueado: "${message}" (Palabra: ${moderation.word})`
+        });
 
-      return NextResponse.json({ 
-        error: "MODERATION_BLOCKED", 
-        word: moderation.word 
-      }, { status: 400 });
+        return NextResponse.json({ 
+          error: "MODERATION_BLOCKED", 
+          word: moderation.word 
+        }, { status: 400 });
+      }
     }
 
     const supabase = await createClient();
 
-    // 2. Fetch Session context
+    // 2. Obtener el contexto de la sesión (status, agent_config, pedagogical_objective)
     const { data: session, error: sessionError } = await supabase
       .from("sessions")
       .select("status, agent_config, pedagogical_objective")
@@ -42,11 +49,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "SESSION_NOT_FOUND" }, { status: 404 });
     }
 
-    if (session.status === "paused" || session.status === "closed") {
+    // Si la sesión está pausada, no se permite chatear
+    if (session.status === "paused") {
       return NextResponse.json({ error: "SESSION_NOT_ACTIVE" }, { status: 403 });
     }
 
-    // 3. Fetch Roadmap tasks
+    const isClosed = session.status === "closed";
+
+    // 3. Cargar el System Prompt correspondiente
+    // Mapeo: constructivista -> Pensabot.md, conductual/cognitivista -> Construbot.md
+    const agentConfig = session.agent_config;
+    let promptFilename: "Pensabot" | "Construbot" = "Pensabot";
+    
+    if (agentConfig === "constructivista") {
+      promptFilename = "Pensabot";
+    } else if (agentConfig === "cognitivista" || (agentConfig as string) === "conductual") {
+      promptFilename = "Construbot";
+    }
+
+    let systemInstruction = getSystemPrompt(promptFilename);
+
+    // Obtener las tareas del Roadmap para inyectar al final del prompt
     const { data: tasks } = await supabase
       .from("roadmap_tasks")
       .select("title")
@@ -55,74 +78,129 @@ export async function POST(req: Request) {
 
     const taskTitles = (tasks ?? []).map(t => t.title);
 
-    // 4. Fetch Chat History (Last 10 messages to keep context lean)
-    const { data: history } = await supabase
-      .from("messages")
-      .select("role, content")
-      .eq("student_session_id", studentSessionId)
-      .order("created_at", { ascending: true })
-      .limit(10);
+    // Enriquecer el system prompt con el objetivo y roadmap en tiempo real
+    systemInstruction += `\n\n### CONTEXTO DE LA ACTIVIDAD\n`;
+    systemInstruction += `- **Objetivo Pedagógico de la Sesión:** ${session.pedagogical_objective}\n`;
+    if (taskTitles.length > 0) {
+      systemInstruction += `- **Hoja de Ruta (Roadmap):**\n`;
+      taskTitles.forEach((title, idx) => {
+        systemInstruction += `  ${idx + 1}. ${title}\n`;
+      });
+    }
 
-    // 5. Initialize Gemini
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!);
-    const systemPrompt = getSystemPrompt(
-      session.agent_config,
-      session.pedagogical_objective,
-      taskTitles
-    );
+    // 4. Formatear y construir el historial de conversación en formato compatible con Gemini
+    let formattedContents: any[] = [];
 
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.5-flash",
-      systemInstruction: systemPrompt
-    });
+    if (messages && Array.isArray(messages) && messages.length > 0) {
+      // Usar historial enviado en la petición
+      formattedContents = messages
+        .filter((m: any) => m.role === "user" || m.role === "assistant" || m.role === "model" || m.role === "system")
+        .map((m: any) => {
+          // Gemini solo soporta roles 'user' y 'model' en la conversación principal
+          const role = m.role === "assistant" || m.role === "model" ? "model" : "user";
+          let text = "";
+          if (typeof m.content === "string") {
+            text = m.content;
+          } else if (Array.isArray(m.parts) && m.parts[0]?.text) {
+            text = m.parts[0].text;
+          } else if (typeof m.text === "string") {
+            text = m.text;
+          }
+          return {
+            role,
+            parts: [{ text }]
+          };
+        });
+        
+      // Si el último mensaje enviado no coincide con el nuevo "message", lo agregamos
+      if (message) {
+        const lastMsgText = formattedContents[formattedContents.length - 1]?.parts?.[0]?.text;
+        if (lastMsgText !== message) {
+          formattedContents.push({
+            role: "user",
+            parts: [{ text: message }]
+          });
+        }
+      }
+    } else {
+      // Obtener el historial desde Supabase (últimos 10 mensajes) si no se pasa en el cuerpo
+      const { data: dbHistory } = await supabase
+        .from("messages")
+        .select("role, content")
+        .eq("student_session_id", studentSessionId)
+        .order("created_at", { ascending: true })
+        .limit(10);
 
-    const chat = model.startChat({
-      history: (history ?? [])
-        .filter(m => m.role !== "system")
-        .map(m => ({
+      formattedContents = (dbHistory ?? [])
+        .filter((m: any) => m.role !== "system")
+        .map((m: any) => ({
           role: m.role === "assistant" ? "model" : "user",
-          parts: [{ text: m.content }],
-        })),
-      generationConfig: {
-        maxOutputTokens: 2048,
-      },
-    });
+          parts: [{ text: m.content }]
+        }));
 
-    // 5.1. Execute with automatic retries for 503 errors
-    let result;
+      if (message) {
+        formattedContents.push({
+          role: "user",
+          parts: [{ text: message }]
+        });
+      }
+    }
+
+    // 5. Lógica de Comando de Cierre
+    // Si la sesión está cerrada en Supabase, inyectamos "/finalizar" de forma invisible al final del chat
+    if (isClosed) {
+      const lastMsgText = formattedContents[formattedContents.length - 1]?.parts?.[0]?.text;
+      if (lastMsgText !== "/finalizar") {
+        formattedContents.push({
+          role: "user", // Como mensaje de usuario para simular el comando del sistema textual
+          parts: [{ text: "/finalizar" }]
+        });
+      }
+    }
+
+    // 6. Configurar y llamar a Gemini con SDK `@google/genai`
+    const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY });
+    
+    let responseText = "";
     let retries = 0;
     const MAX_RETRIES = 3;
-    const INITIAL_DELAY = 1000; // 1 second
+    const INITIAL_DELAY = 1000;
 
     while (true) {
       try {
-        result = await chat.sendMessage(message);
-        break; // Success!
+        const response = await ai.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: formattedContents,
+          config: {
+            systemInstruction: systemInstruction,
+            temperature: 0.4,
+          }
+        });
+        responseText = response.text || "";
+        break; // Éxito
       } catch (error: any) {
         retries++;
-        // If it's a 503 and we have retries left, wait and try again
-        if (error.status === 503 && retries <= MAX_RETRIES) {
+        if (error?.status === 503 && retries <= MAX_RETRIES) {
           const delay = INITIAL_DELAY * Math.pow(2, retries - 1);
-          console.warn(`Gemini API 503: High demand. Retry ${retries}/${MAX_RETRIES} in ${delay}ms...`);
+          console.warn(`[Gemini API] 503 detectado. Reintento ${retries}/${MAX_RETRIES} en ${delay}ms...`);
           await new Promise(resolve => setTimeout(resolve, delay));
           continue;
         }
-        // If other error or no retries left, throw it
         throw error;
       }
     }
 
-    const responseText = result.response.text();
+    // 7. Guardar los mensajes en la base de datos Supabase
+    // Guardar el mensaje del usuario
+    if (message && !isClosed) {
+      await supabase.from("messages").insert({
+        student_session_id: studentSessionId,
+        role: "user",
+        content: message
+      });
+    }
 
-    // 6. Save messages to DB
-    // User message
-    await supabase.from("messages").insert({
-      student_session_id: studentSessionId,
-      role: "user",
-      content: message
-    });
-
-    // Assistant response
+    // Guardar la respuesta de la IA (sea la respuesta del bot o el resumen de finalización)
     const { data: assistantMsg, error: saveError } = await supabase.from("messages").insert({
       student_session_id: studentSessionId,
       role: "assistant",
@@ -130,17 +208,17 @@ export async function POST(req: Request) {
     }).select().single();
 
     if (saveError) {
-      console.error("SAVE_MESSAGE_ERROR:", saveError);
+      console.error("[ChatAPI] Error al guardar respuesta del asistente:", saveError);
     }
 
-    return NextResponse.json({ 
-      role: "assistant", 
+    return NextResponse.json({
+      role: "assistant",
       content: responseText,
       id: assistantMsg?.id
     });
 
   } catch (error) {
-    console.error("CHAT_API_ERROR:", error);
+    console.error("[ChatAPI] Error interno del servidor:", error);
     return NextResponse.json({ error: "INTERNAL_SERVER_ERROR" }, { status: 500 });
   }
 }

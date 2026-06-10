@@ -65,18 +65,54 @@
   z-index: 10;
 }
 
+.backdrop {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .shell {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto auto;
+    grid-template-rows: auto 1fr auto;
     grid-template-areas:
       "header"
       "main"
-      "aside"
       "footer";
   }
 
   .main {
     border-right: none;
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    background: var(--color-overlay);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+  }
+
+  .aside {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 320px;
+    height: 100dvh;
+    z-index: 1000;
+    box-shadow: var(--shadow-lg);
+    transform: translateX(100%);
+    transition: transform var(--transition-base);
+    border-left: 1px solid var(--color-border);
+    border-top: none;
+    max-height: none;
+    height: 100dvh;
+    top: 0;
+  }
+
+  .aside.open {
+    transform: translateX(0);
   }
 }

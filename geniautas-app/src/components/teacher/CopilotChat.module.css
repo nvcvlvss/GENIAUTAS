@@ -1,0 +1,220 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 500px;
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.chatHeader {
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--color-surface-1);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-heading);
+  font-size: var(--text-body);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.copilotIcon {
+  color: var(--color-primary);
+}
+
+.sparkleIcon {
+  color: var(--color-warning);
+  margin-left: 2px;
+}
+
+.headerSubtitle {
+  margin: 4px 0 0;
+  font-size: var(--text-tiny);
+  color: var(--color-text-secondary);
+}
+
+.chatArea {
+  flex: 1;
+  padding: var(--sp-4);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.messagesList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  width: 100%;
+}
+
+.messageWrapper {
+  display: flex;
+  width: 100%;
+}
+
+.teacherWrapper {
+  justify-content: flex-end;
+}
+
+.copilotWrapper {
+  justify-content: flex-start;
+}
+
+.messageBubble {
+  max-width: 80%;
+  padding: var(--sp-3) var(--sp-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-small);
+  line-height: var(--line-small);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.teacherBubble {
+  background: var(--color-primary);
+  color: #0b1220;
+  border-bottom-right-radius: 2px;
+}
+
+.copilotBubble {
+  background: var(--color-surface-1);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-strong);
+  border-bottom-left-radius: 2px;
+}
+
+.roleLabel {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.8;
+  margin-bottom: 2px;
+}
+
+.teacherBubble .roleLabel {
+  color: #0b1220;
+}
+
+.copilotBubble .roleLabel {
+  color: var(--color-primary);
+}
+
+.messageContent {
+  white-space: pre-wrap;
+}
+
+.loadingState {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--color-text-secondary);
+  font-size: var(--text-tiny);
+  font-style: italic;
+}
+
+.spin {
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.errorAlert {
+  padding: var(--sp-3);
+  border-radius: var(--radius-sm);
+  background: rgba(242, 107, 107, 0.12);
+  border: 1px solid rgba(242, 107, 107, 0.3);
+  color: var(--color-danger);
+  font-size: var(--text-small);
+  text-align: center;
+  align-self: center;
+  max-width: 90%;
+  margin-top: var(--sp-2);
+}
+
+.suggestionsContainer {
+  padding: var(--sp-2) var(--sp-4) var(--sp-3);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.suggestionsLabel {
+  font-size: var(--text-tiny);
+  color: var(--color-text-tertiary);
+  font-weight: 600;
+}
+
+.suggestionsList {
+  display: flex;
+  gap: var(--sp-2);
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.suggestionBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--sp-1) var(--sp-3);
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-secondary);
+  font-size: var(--text-tiny);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.suggestionBtn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-surface-2);
+}
+
+.suggestionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.inputArea {
+  display: flex;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--color-surface-1);
+  border-top: 1px solid var(--color-border);
+  gap: var(--sp-3);
+  align-items: center;
+}
+
+.inputWrapper {
+  flex: 1;
+}
+
+.chatInput {
+  width: 100%;
+}
+
+.sendButton {
+  flex-shrink: 0;
+  border-radius: var(--radius-pill);
+  height: 40px !important;
+  width: 40px !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

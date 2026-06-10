@@ -101,7 +101,7 @@ export function SessionCard({
             variant="primary"
             size="sm"
             loading={busy}
-            disabled={busy || session.status === "closed"}
+            disabled={busy}
             onClick={() => onResume(session.id)}
             title="Lanzar o reanudar"
           >

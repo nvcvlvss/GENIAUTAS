@@ -46,6 +46,7 @@ export default function LoginPage() {
               placeholder="profe@colegio.cl"
               required
               autoComplete="email"
+              helperText="Se usará para iniciar sesión y asociar las actividades del aula con tu perfil."
             />
             <Input
               label="Contraseña"
@@ -54,6 +55,7 @@ export default function LoginPage() {
               placeholder="••••••••"
               required
               autoComplete="current-password"
+              helperText="Permite asegurar el acceso restringido a las respuestas y datos de tus estudiantes."
             />
             <Button
               type="submit"
@@ -65,6 +67,9 @@ export default function LoginPage() {
               <LogIn size={20} aria-hidden />
               <span>Iniciar sesión</span>
             </Button>
+            <p style={{ fontSize: "11px", color: "var(--color-text-tertiary)", marginTop: "8px", textAlign: "center", lineHeight: "1.4" }}>
+              Al iniciar sesión, accederás al panel para administrar laboratorios, lanzar sesiones y supervisar chats de tus alumnos en tiempo real.
+            </p>
           </form>
 
           <p className={styles.footer}>

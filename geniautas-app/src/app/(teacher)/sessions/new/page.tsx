@@ -148,23 +148,32 @@ export default function NewSessionPage() {
               value={objective}
               onChange={(e) => setObjective(e.target.value)}
               required
+              helperText="Define la meta pedagógica. El copiloto IA de aula usará este objetivo para guiar a los alumnos en el tema correcto."
             />
             <Select
-              label="Tipo de agente IA"
+              label="Estilo de guía de la IA"
               value={agentConfig}
               onChange={(e) => setAgentConfig(e.target.value as AgentType)}
+              helperText="Determina la personalidad y el enfoque pedagógico que adoptará el chatbot al interactuar con tus estudiantes."
             >
-              <option value="neutro">Neutro (asistente general)</option>
-              <option value="constructivista">
-                Construbot (socrático, no da respuestas directas)
+              <option value="neutro">
+                Asistente general neutro (responde directo y apoya técnicamente sin forzar la reflexión)
               </option>
-              <option value="cognitivista">Pensabot (estructura y pasos)</option>
+              <option value="constructivista">
+                Pensabot (Socrático y Reflexivo: guiará usando preguntas reflexivas de baja fricción para que el estudiante descubra la solución por sí mismo)
+              </option>
+              <option value="cognitivista">
+                Construbot (Pragmático y Orientado a la Acción: guiará al alumno paso a paso para estructurar un plan práctico con metas concretas)
+              </option>
             </Select>
           </div>
         </Card>
 
         <Card padding="default">
           <h2 className={styles.sectionTitle}>3. Roadmap de tareas</h2>
+          <p style={{ fontSize: "13px", color: "var(--color-text-secondary)", marginBottom: "16px", lineHeight: "1.4" }}>
+            Agrega las tareas que tus estudiantes deberán resolver en esta actividad. Ellos las podrán ver como un listado de cosas que deben hacer y deberán completarlas una por una, paso a paso, para completar tu actividad.
+          </p>
           <div className={styles.stack}>
             {tasks.map((task, index) => (
               <div key={index} className={styles.taskRow}>

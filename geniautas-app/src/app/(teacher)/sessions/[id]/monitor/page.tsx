@@ -26,7 +26,9 @@ import { AlertCard } from "@/components/teacher/AlertCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { Chip, type ChipStatus } from "@/components/ui/Chip";
+import { Card } from "@/components/ui/Card";
 import { GRADE_LABELS } from "@/lib/constants";
+import { CopilotChat } from "@/components/teacher/CopilotChat";
 import styles from "./page.module.css";
 
 const STATUS_CHIP: Record<SessionStatus, ChipStatus> = {
@@ -41,6 +43,10 @@ type AccessRequestRow = Database["public"]["Tables"]["session_join_requests"]["R
 export default function SessionMonitorPage() {
   const params = useParams();
   const sessionId = params.id as string;
+  
+  // Pestañas: access (Control de acceso), monitor (Monitoreo y alertas), copilot (IA Copiloto)
+  const [activeTab, setActiveTab] = useState<"access" | "monitor" | "copilot">("access");
+
   const [requests, setRequests] = useState<AccessRequestRow[]>([]);
   const [students, setStudents] = useState<StudentSessionRow[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
@@ -50,6 +56,7 @@ export default function SessionMonitorPage() {
   const [sessionTitle, setSessionTitle] = useState("Sesión");
   const [sessionGrade, setSessionGrade] = useState<string | null>(null);
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>("draft");
+  const [pedagogicalObjective, setPedagogicalObjective] = useState("");
   const [statusBusy, setStatusBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState<{
@@ -76,6 +83,17 @@ export default function SessionMonitorPage() {
         setSessionGrade(session.grade ?? null);
         setSessionStatus((session.status as SessionStatus) ?? "draft");
         setTotalTasks(tasksData.length);
+
+        // Consultar objetivo pedagógico completo
+        const { data: fullSession } = await supabase
+          .from("sessions")
+          .select("pedagogical_objective")
+          .eq("id", sessionId)
+          .single();
+
+        if (fullSession) {
+          setPedagogicalObjective(fullSession.pedagogical_objective);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -191,7 +209,6 @@ export default function SessionMonitorPage() {
           table: "student_task_progress",
         },
         (payload) => {
-          // If a task is marked as uncompleted (unlikely but safe)
           if (payload.new.is_completed === false) {
              setStudents((current) =>
               current.map((s) =>
@@ -270,49 +287,93 @@ export default function SessionMonitorPage() {
     return <div className={styles.pageLoading}>Cargando monitor…</div>;
   }
 
+  // 1. Cabecera superior unificada con selectores de pestañas
   const topBar = (
-    <div className={styles.topLeft}>
-      <Link href="/sessions" className={styles.back}>
-        ← Volver a sesiones
-      </Link>
-      <h1 className={styles.topTitle}>{sessionTitle}</h1>
-      <Chip status={STATUS_CHIP[sessionStatus]} />
+    <div className={styles.topLeft} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <Link href="/sessions" className={styles.back}>
+          ← Volver
+        </Link>
+        <h1 className={styles.topTitle}>{sessionTitle}</h1>
+        <Chip status={STATUS_CHIP[sessionStatus]} />
+      </div>
+
+      {/* Navegación por pestañas */}
+      <div style={{ display: "flex", gap: "6px", background: "var(--color-bg)", padding: "4px", borderRadius: "24px", border: "1px solid var(--color-border)" }}>
+        <button
+          type="button"
+          onClick={() => setActiveTab("access")}
+          style={{
+            padding: "8px 18px",
+            borderRadius: "20px",
+            fontSize: "13px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            border: "none",
+            background: activeTab === "access" ? "var(--color-primary)" : "transparent",
+            color: activeTab === "access" ? "#0b1220" : "var(--color-text-secondary)",
+            transition: "all var(--transition-fast)"
+          }}
+        >
+          Control de Acceso
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("monitor")}
+          style={{
+            padding: "8px 18px",
+            borderRadius: "20px",
+            fontSize: "13px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            border: "none",
+            background: activeTab === "monitor" ? "var(--color-primary)" : "transparent",
+            color: activeTab === "monitor" ? "#0b1220" : "var(--color-text-secondary)",
+            transition: "all var(--transition-fast)"
+          }}
+        >
+          Monitoreo y Alertas
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("copilot")}
+          style={{
+            padding: "8px 18px",
+            borderRadius: "20px",
+            fontSize: "13px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            border: "none",
+            background: activeTab === "copilot" ? "var(--color-primary)" : "transparent",
+            color: activeTab === "copilot" ? "#0b1220" : "var(--color-text-secondary)",
+            transition: "all var(--transition-fast)"
+          }}
+        >
+          IA Copiloto de Sesión
+        </button>
+      </div>
     </div>
   );
 
-  const sidebar = (
-    <div>
-      <div className={styles.subsection}>
-        <h2 className={styles.queueTitle}>
-          Estudiantes en clase ({students.length})
-        </h2>
-        {students.length === 0 ? (
-          <EmptyState
-            title="Aún no hay estudiantes"
-            description="Los alumnos aparecerán aquí una vez que apruebes su ingreso."
-          />
-        ) : (
-          <div className={styles.queue}>
-            {students.map((student) => (
-              <StudentSessionItem
-                key={student.id}
-                student={student}
-                totalTasks={totalTasks}
-                isSelected={selectedStudentId === student.id}
-                onClick={() => setSelectedStudentId(student.id)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+  // 2. Definición dinámica de los paneles según la pestaña seleccionada
+  let sidebar: React.ReactNode;
+  let main: React.ReactNode;
+  let aside: React.ReactNode;
+  let sidebarTitle = "Estudiantes y solicitudes";
+  let asideTitle = "Alertas y acciones";
+
+  if (activeTab === "access") {
+    // === PESTAÑA 1: CONTROL DE ACCESO ===
+    sidebarTitle = "Sala de Espera (Estudiantes)";
+    sidebar = (
       <div>
         <h2 className={styles.queueTitle}>
-          Solicitudes pendientes ({requests.length})
+          Solicitudes de ingreso ({requests.length})
         </h2>
         {requests.length === 0 ? (
           <EmptyState
-            title="Sin solicitudes"
-            description="Cuando un estudiante pida ingreso, aparecerá aquí al instante."
+            title="Sala de espera vacía"
+            description="Cuando un estudiante intente unirse, aparecerá aquí su solicitud para que la apruebes."
           />
         ) : (
           <div className={styles.queue}>
@@ -331,113 +392,299 @@ export default function SessionMonitorPage() {
           </div>
         )}
       </div>
-    </div>
-  );
+    );
 
-  const selectedStudent = students.find((s) => s.id === selectedStudentId);
+    main = (
+      <div className={styles.main}>
+        {notice ? <div className={styles.notice}>{notice}</div> : null}
+        <div className={styles.mainBody}>
+          <Card padding="default">
+            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "20px", fontWeight: 700, marginBottom: "8px", color: "var(--color-primary)" }}>
+              Control de Acceso y Estudiantes Admitidos
+            </h2>
+            <p style={{ fontSize: "14px", color: "var(--color-text-secondary)", marginBottom: "24px", lineHeight: "1.5" }}>
+              Utiliza la columna izquierda para aceptar o rechazar solicitudes de ingreso. A continuación se listan los estudiantes que ya han sido aprobados y forman parte de la sesión:
+            </p>
 
-  const main = (
-    <div className={styles.main}>
-      {notice ? <div className={styles.notice}>{notice}</div> : null}
-      <div className={styles.mainBody}>
-        {selectedStudentId && selectedStudent ? (
-          <ChatMonitorView
-            studentSessionId={selectedStudentId}
-            studentName={selectedStudent.full_name}
-          />
-        ) : (
-          <EmptyState
-            title="Selecciona un estudiante"
-            description="Elige un alumno en la lista para revisar su conversación con el agente en tiempo real."
-          />
-        )}
-      </div>
-    </div>
-  );
+            <h3 style={{ fontSize: "15px", fontWeight: 600, marginBottom: "16px", color: "var(--color-text)" }}>
+              Alumnos en la sesión ({students.length}/10 concurrentes)
+            </h3>
 
-  const aside = (
-    <div className={styles.asideStack}>
-      {alerts.length === 0 ? (
-        <>
-          <AlertCard
-            kind="risk"
-            title="Sin alertas de riesgo"
-            description="Aquí aparecerán avisos si el sistema detecta lenguaje o contenidos sensibles."
-          />
-          <AlertCard
-            kind="moderation"
-            title="Moderación estable"
-            description="Te avisaremos si un mensaje fue bloqueado o reemplazado por el motor de seguridad."
-          />
-        </>
-      ) : (
-        alerts.map((alert) => (
-          <AlertCard
-            key={alert.id}
-            kind={
-              alert.type === "security"
-                ? "risk"
-                : alert.type === "technical"
-                  ? "session"
-                  : "moderation"
-            }
-            title={alert.student_sessions?.full_name ?? "Sistema"}
-            description={alert.content_snapshot}
-          />
-        ))
-      )}
-      <div>
-        <p className={styles.sessionMeta}>Acciones de sesión</p>
-        <div className={styles.sessionActions}>
-          {sessionStatus === "active" ? (
-            <Button
-              type="button"
-              variant="warning"
-              size="sm"
-              fullWidth
-              disabled={statusBusy}
-              loading={statusBusy}
-              onClick={() => changeSessionStatus("paused")}
-            >
-              Pausar actividad
-            </Button>
-          ) : sessionStatus !== "closed" ? (
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              fullWidth
-              disabled={statusBusy}
-              loading={statusBusy}
-              onClick={() => changeSessionStatus("active")}
-            >
-              {sessionStatus === "draft" ? "Lanzar actividad" : "Reanudar actividad"}
-            </Button>
-          ) : null}
-          {sessionStatus !== "closed" ? (
-            <Button
-              type="button"
-              variant="destructive"
-              size="sm"
-              fullWidth
-              disabled={statusBusy}
-              loading={statusBusy}
-              onClick={() => changeSessionStatus("closed")}
-            >
-              Cerrar sesión
-            </Button>
-          ) : null}
+            {students.length === 0 ? (
+              <EmptyState
+                title="Sin alumnos en clase todavía"
+                description="Ningún estudiante ha ingresado aún. Revisa las solicitudes en la sala de espera."
+              />
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "16px" }}>
+                {students.map((student) => {
+                  const isOnline = student.is_active;
+                  return (
+                    <Card key={student.id} padding="default" style={{ border: "1px solid var(--color-border)", display: "flex", alignItems: "center", gap: "12px", background: "var(--color-surface-1)" }}>
+                      <span style={{ fontSize: "24px" }}>👤</span>
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div style={{ fontWeight: "bold", fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {student.full_name}
+                        </div>
+                        <div style={{ fontSize: "12px", color: isOnline ? "var(--color-success)" : "var(--color-text-tertiary)" }}>
+                          {isOnline ? "En línea" : "Desconectado"} · {student.completed_tasks_count || 0}/{totalTasks} tareas
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </Card>
         </div>
       </div>
-    </div>
-  );
+    );
+
+    asideTitle = "Configuración y Actividad";
+    aside = (
+      <div className={styles.asideStack}>
+        <Card padding="default" style={{ border: "1px solid var(--color-border)", background: "var(--color-surface-1)" }}>
+          <h3 style={{ fontSize: "14px", fontWeight: 700, color: "var(--color-primary)", marginBottom: "8px" }}>
+            Consecuencias de Estado
+          </h3>
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {sessionStatus === "active" && (
+              <p style={{ fontSize: "12px", color: "var(--color-text-secondary)", lineHeight: "1.4", margin: 0 }}>
+                🟢 **Activa**: Los estudiantes admitidos pueden ingresar a su laboratorio y chatear con la IA para resolver su roadmap de tareas.
+              </p>
+            )}
+            {sessionStatus === "paused" && (
+              <p style={{ fontSize: "12px", color: "var(--color-text-secondary)", lineHeight: "1.4", margin: 0 }}>
+                🟡 **Pausada**: Los chats de los estudiantes quedan inhabilitados. No pueden enviar nuevos mensajes hasta que reanudes la sesión.
+              </p>
+            )}
+            {sessionStatus === "closed" && (
+              <p style={{ fontSize: "12px", color: "var(--color-text-secondary)", lineHeight: "1.4", margin: 0 }}>
+                🔴 **Cerrada**: La clase ha terminado. Los estudiantes ya no interactúan y el Route Handler inyectará `/finalizar` para emitir el reporte socrático final de la IA.
+              </p>
+            )}
+            {sessionStatus === "draft" && (
+              <p style={{ fontSize: "12px", color: "var(--color-text-secondary)", lineHeight: "1.4", margin: 0 }}>
+                ⚪ **Borrador**: La actividad está configurada pero aún no se ha abierto al ingreso de los alumnos en sus dispositivos.
+              </p>
+            )}
+          </div>
+        </Card>
+
+        <div>
+          <p className={styles.sessionMeta}>Acciones de sesión</p>
+          <div className={styles.sessionActions}>
+            {sessionStatus === "active" ? (
+              <Button
+                type="button"
+                variant="warning"
+                size="sm"
+                fullWidth
+                disabled={statusBusy}
+                loading={statusBusy}
+                onClick={() => changeSessionStatus("paused")}
+              >
+                Pausar actividad
+              </Button>
+            ) : sessionStatus !== "closed" ? (
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                fullWidth
+                disabled={statusBusy}
+                loading={statusBusy}
+                onClick={() => changeSessionStatus("active")}
+              >
+                {sessionStatus === "draft" ? "Lanzar actividad" : "Reanudar actividad"}
+              </Button>
+            ) : null}
+            {sessionStatus !== "closed" ? (
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                fullWidth
+                disabled={statusBusy}
+                loading={statusBusy}
+                onClick={() => changeSessionStatus("closed")}
+              >
+                Cerrar sesión
+              </Button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    );
+
+  } else if (activeTab === "monitor") {
+    // === PESTAÑA 2: MONITOREO Y ALERTAS (Modo Espejo) ===
+    sidebarTitle = "Estudiantes";
+    sidebar = (
+      <div>
+        <h2 className={styles.queueTitle}>
+          Alumnos en clase ({students.length})
+        </h2>
+        {students.length === 0 ? (
+          <EmptyState
+            title="Aún no hay estudiantes"
+            description="Los alumnos aprobados aparecerán aquí para monitorear su avance."
+          />
+        ) : (
+          <div className={styles.queue}>
+            {students.map((student) => (
+              <StudentSessionItem
+                key={student.id}
+                student={student}
+                totalTasks={totalTasks}
+                isSelected={selectedStudentId === student.id}
+                onClick={() => setSelectedStudentId(student.id)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+
+    const selectedStudent = students.find((s) => s.id === selectedStudentId);
+
+    main = (
+      <div className={styles.main}>
+        {notice ? <div className={styles.notice}>{notice}</div> : null}
+        
+        {/* Selector de alumnos para pantallas móviles */}
+        <div className={styles.mobileStudentSelector}>
+          <label className={styles.mobileSelectorLabel}>
+            Monitorear alumno en tiempo real:
+          </label>
+          <select
+            value={selectedStudentId || ""}
+            onChange={(e) => setSelectedStudentId(e.target.value || null)}
+            className={styles.mobileSelectControl}
+          >
+            <option value="">Selecciona un alumno...</option>
+            {students.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.full_name} ({s.is_active ? "En línea" : "Desconectado"})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.mainBody}>
+          {selectedStudentId && selectedStudent ? (
+            <ChatMonitorView
+              studentSessionId={selectedStudentId}
+              studentName={selectedStudent.full_name}
+            />
+          ) : (
+            <EmptyState
+              title="Selecciona un estudiante"
+              description="Haz clic sobre un alumno en la barra lateral o selecciónalo desde el menú desplegable superior para ver su chat con el bot en modo espejo. Esta vista es de lectura exclusiva para evitar interrupciones."
+            />
+          )}
+        </div>
+      </div>
+    );
+
+    asideTitle = "Alertas de Moderación";
+    aside = (
+      <div className={styles.asideStack}>
+        {alerts.length === 0 ? (
+          <>
+            <AlertCard
+              kind="risk"
+              title="Sin alertas de riesgo"
+              description="Aquí aparecerán avisos si el sistema detecta lenguaje o contenidos sensibles."
+            />
+            <AlertCard
+              kind="moderation"
+              title="Moderación estable"
+              description="Te avisaremos si un mensaje fue bloqueado o reemplazado por el motor de seguridad."
+            />
+          </>
+        ) : (
+          alerts.map((alert) => (
+            <AlertCard
+              key={alert.id}
+              kind={
+                alert.type === "security"
+                  ? "risk"
+                  : alert.type === "technical"
+                    ? "session"
+                    : "moderation"
+              }
+              title={alert.student_sessions?.full_name ?? "Sistema"}
+              description={alert.content_snapshot}
+            />
+          ))
+        )}
+      </div>
+    );
+
+  } else {
+    // === PESTAÑA 3: IA COPILOTO DE SESIÓN ===
+    sidebarTitle = "Resumen de Sesión";
+    sidebar = (
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <Card padding="default" style={{ background: "var(--color-bg)", border: "1px solid var(--color-border)" }}>
+          <h3 style={{ fontSize: "14px", fontWeight: "bold", color: "var(--color-primary)", marginBottom: "8px" }}>
+            Objetivo de Aprendizaje
+          </h3>
+          <p style={{ fontSize: "12px", color: "var(--color-text-secondary)", lineHeight: "1.4", margin: 0 }}>
+            {pedagogicalObjective || "Sin objetivo pedagógico configurado."}
+          </p>
+        </Card>
+        
+        <Card padding="default" style={{ background: "var(--color-bg)", border: "1px solid var(--color-border)" }}>
+          <h3 style={{ fontSize: "14px", fontWeight: "bold", color: "var(--color-primary)", marginBottom: "8px" }}>
+            Métricas Actuales
+          </h3>
+          <div style={{ fontSize: "12px", display: "flex", flexDirection: "column", gap: "6px" }}>
+            <div>👥 Estudiantes aprobados: <strong>{students.length}</strong></div>
+            <div>🟢 Conectados ahora: <strong>{students.filter(s => s.is_active).length}</strong></div>
+            <div>⚠️ Alertas sin resolver: <strong>{alerts.filter(a => !a.is_resolved).length}</strong></div>
+          </div>
+        </Card>
+      </div>
+    );
+
+    main = (
+      <div className={styles.main} style={{ height: "100%" }}>
+        <div className={styles.mainBody} style={{ height: "100%", padding: 0 }}>
+          <CopilotChat sessionId={sessionId} />
+        </div>
+      </div>
+    );
+
+    asideTitle = "Consejos del Copiloto";
+    aside = (
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <AlertCard
+          kind="moderation"
+          title="¿Cómo interactuar?"
+          description="Escribe tus dudas técnicas de uso, o pídele que interprete el avance de tus estudiantes para aconsejarte."
+        />
+        <AlertCard
+          kind="risk"
+          title="Mediación de Alertas"
+          description="Si ves alertas de alumnos activos, pídele recomendaciones: '¿Cómo puedo asistir a [Nombre]?' para obtener una sugerencia práctica de mediación."
+        />
+      </div>
+    );
+  }
 
   return (
     <TeacherShell
       topBar={topBar}
       sidebar={sidebar}
+      sidebarTitle={sidebarTitle}
       main={main}
       aside={aside}
+      asideTitle={asideTitle}
+      hideSidebarOnMobile={activeTab === "monitor" || activeTab === "copilot"}
+      hideAsideOnMobile={activeTab === "monitor" || activeTab === "copilot"}
     />
   );
 }

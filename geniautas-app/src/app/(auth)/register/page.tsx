@@ -50,6 +50,7 @@ export default function RegisterPage() {
               placeholder="Ej: Prof. María García"
               required
               autoComplete="name"
+              helperText="Tus alumnos verán este nombre para identificar que eres el profesor que supervisa el laboratorio."
             />
             <Input
               label="Correo electrónico"
@@ -58,6 +59,7 @@ export default function RegisterPage() {
               placeholder="profe@colegio.cl"
               required
               autoComplete="email"
+              helperText="Se usará para enviarte resúmenes pedagógicos y alertas críticas de tus sesiones de clase."
             />
             <Input
               label="Contraseña"
@@ -67,6 +69,7 @@ export default function RegisterPage() {
               required
               autoComplete="new-password"
               minLength={6}
+              helperText="Crea una contraseña segura para resguardar la privacidad de las conversaciones e historial de tus cursos."
             />
             <Button
               type="submit"
@@ -78,6 +81,9 @@ export default function RegisterPage() {
               {!loading ? <UserPlus size={20} aria-hidden /> : null}
               <span>Crear cuenta</span>
             </Button>
+            <p style={{ fontSize: "11px", color: "var(--color-text-tertiary)", marginTop: "8px", textAlign: "center", lineHeight: "1.4" }}>
+              Crear tu cuenta habilitará tu perfil docente, permitiéndote configurar objetivos pedagógicos, diseñar roadmaps de tareas y guiar sesiones de IA.
+            </p>
           </form>
 
           <p className={styles.footer}>

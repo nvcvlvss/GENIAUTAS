@@ -568,4 +568,10 @@ export const Constants = {
       session_status: ["draft", "active", "paused", "closed"],
     },
   },
-} as const
+} as const;
+
+export type Session = Database["public"]["Tables"]["sessions"]["Row"];
+export type AgentType = Database["public"]["Enums"]["agent_type"];
+export type SessionStatus = Database["public"]["Enums"]["session_status"];
+export type SessionJoinRequest = Database["public"]["Tables"]["session_join_requests"]["Row"];
+

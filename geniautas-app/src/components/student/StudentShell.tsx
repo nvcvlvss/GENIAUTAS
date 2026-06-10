@@ -6,14 +6,29 @@ type StudentShellProps = {
   main: ReactNode;
   aside: ReactNode;
   footer: ReactNode;
+  asideOpen?: boolean;
+  onAsideClose?: () => void;
 };
 
-export function StudentShell({ header, main, aside, footer }: StudentShellProps) {
+export function StudentShell({
+  header,
+  main,
+  aside,
+  footer,
+  asideOpen = false,
+  onAsideClose,
+}: StudentShellProps) {
   return (
     <div className={styles.shell}>
       <header className={styles.header}>{header}</header>
       <main className={styles.main}>{main}</main>
-      <aside className={styles.aside}>{aside}</aside>
+      
+      {/* Backdrop para cerrar el drawer en móviles al hacer clic fuera */}
+      {asideOpen && (
+        <div className={styles.backdrop} onClick={onAsideClose} aria-hidden="true" />
+      )}
+      
+      <aside className={`${styles.aside} ${asideOpen ? styles.open : ""}`}>{aside}</aside>
       <footer className={styles.footer}>{footer}</footer>
     </div>
   );

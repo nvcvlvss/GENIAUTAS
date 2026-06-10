@@ -1,7 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { AgentType, Session } from '@/types/database';
+import { AgentType, Session, SessionStatus } from '@/types/database';
 
 export async function createSession(formData: {
   title: string;
