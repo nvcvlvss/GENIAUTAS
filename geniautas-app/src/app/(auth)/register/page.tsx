@@ -81,7 +81,7 @@ export default function RegisterPage() {
               {!loading ? <UserPlus size={20} aria-hidden /> : null}
               <span>Crear cuenta</span>
             </Button>
-            <p style={{ fontSize: "11px", color: "var(--color-text-tertiary)", marginTop: "8px", textAlign: "center", lineHeight: "1.4" }}>
+            <p className="text-[11px] text-[var(--color-text-tertiary)] mt-2 text-center leading-relaxed">
               Crear tu cuenta habilitará tu perfil docente, permitiéndote configurar objetivos pedagógicos, diseñar roadmaps de tareas y guiar sesiones de IA.
             </p>
           </form>

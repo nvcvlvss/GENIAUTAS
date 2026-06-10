@@ -189,6 +189,7 @@ export default function StudentLabPage() {
     }
   };
 
+  // animations-disabled-fallback: standard CSS transitions/borders will be used if StarBorder or framer-motion is disabled.
   if (loading) {
     return (
       <div className={styles.loading}>

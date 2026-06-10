@@ -289,8 +289,8 @@ export default function SessionMonitorPage() {
 
   // 1. Cabecera superior unificada con selectores de pestañas
   const topBar = (
-    <div className={styles.topLeft} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+    <div className={`${styles.topLeft} w-full flex justify-between items-center flex-wrap gap-4`}>
+      <div className="flex items-center gap-3">
         <Link href="/sessions" className={styles.back}>
           ← Volver
         </Link>
@@ -299,55 +299,37 @@ export default function SessionMonitorPage() {
       </div>
 
       {/* Navegación por pestañas */}
-      <div style={{ display: "flex", gap: "6px", background: "var(--color-bg)", padding: "4px", borderRadius: "24px", border: "1px solid var(--color-border)" }}>
+      <div className="flex gap-[6px] bg-[var(--color-bg)] p-1 rounded-full border border-[var(--color-border)]">
         <button
           type="button"
           onClick={() => setActiveTab("access")}
-          style={{
-            padding: "8px 18px",
-            borderRadius: "20px",
-            fontSize: "13px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            border: "none",
-            background: activeTab === "access" ? "var(--color-primary)" : "transparent",
-            color: activeTab === "access" ? "#0b1220" : "var(--color-text-secondary)",
-            transition: "all var(--transition-fast)"
-          }}
+          className={`px-[18px] py-2 rounded-[20px] text-[13px] font-bold cursor-pointer border-none transition-all duration-150 ${
+            activeTab === "access"
+              ? "bg-[var(--color-primary)] text-[#0b1220]"
+              : "bg-transparent text-[var(--color-text-secondary)] hover:text-white"
+          }`}
         >
           Control de Acceso
         </button>
         <button
           type="button"
           onClick={() => setActiveTab("monitor")}
-          style={{
-            padding: "8px 18px",
-            borderRadius: "20px",
-            fontSize: "13px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            border: "none",
-            background: activeTab === "monitor" ? "var(--color-primary)" : "transparent",
-            color: activeTab === "monitor" ? "#0b1220" : "var(--color-text-secondary)",
-            transition: "all var(--transition-fast)"
-          }}
+          className={`px-[18px] py-2 rounded-[20px] text-[13px] font-bold cursor-pointer border-none transition-all duration-150 ${
+            activeTab === "monitor"
+              ? "bg-[var(--color-primary)] text-[#0b1220]"
+              : "bg-transparent text-[var(--color-text-secondary)] hover:text-white"
+          }`}
         >
           Monitoreo y Alertas
         </button>
         <button
           type="button"
           onClick={() => setActiveTab("copilot")}
-          style={{
-            padding: "8px 18px",
-            borderRadius: "20px",
-            fontSize: "13px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            border: "none",
-            background: activeTab === "copilot" ? "var(--color-primary)" : "transparent",
-            color: activeTab === "copilot" ? "#0b1220" : "var(--color-text-secondary)",
-            transition: "all var(--transition-fast)"
-          }}
+          className={`px-[18px] py-2 rounded-[20px] text-[13px] font-bold cursor-pointer border-none transition-all duration-150 ${
+            activeTab === "copilot"
+              ? "bg-[var(--color-primary)] text-[#0b1220]"
+              : "bg-transparent text-[var(--color-text-secondary)] hover:text-white"
+          }`}
         >
           IA Copiloto de Sesión
         </button>
@@ -399,14 +381,14 @@ export default function SessionMonitorPage() {
         {notice ? <div className={styles.notice}>{notice}</div> : null}
         <div className={styles.mainBody}>
           <Card padding="default">
-            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "20px", fontWeight: 700, marginBottom: "8px", color: "var(--color-primary)" }}>
+            <h2 className="font-heading text-xl font-bold mb-2 text-[var(--color-primary)]">
               Control de Acceso y Estudiantes Admitidos
             </h2>
-            <p style={{ fontSize: "14px", color: "var(--color-text-secondary)", marginBottom: "24px", lineHeight: "1.5" }}>
+            <p className="text-sm text-[var(--color-text-secondary)] mb-6 leading-relaxed">
               Utiliza la columna izquierda para aceptar o rechazar solicitudes de ingreso. A continuación se listan los estudiantes que ya han sido aprobados y forman parte de la sesión:
             </p>
 
-            <h3 style={{ fontSize: "15px", fontWeight: 600, marginBottom: "16px", color: "var(--color-text)" }}>
+            <h3 className="text-[15px] font-semibold mb-4 text-[var(--color-text)]">
               Alumnos en la sesión ({students.length}/10 concurrentes)
             </h3>
 
@@ -416,17 +398,17 @@ export default function SessionMonitorPage() {
                 description="Ningún estudiante ha ingresado aún. Revisa las solicitudes en la sala de espera."
               />
             ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "16px" }}>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
                 {students.map((student) => {
                   const isOnline = student.is_active;
                   return (
-                    <Card key={student.id} padding="default" style={{ border: "1px solid var(--color-border)", display: "flex", alignItems: "center", gap: "12px", background: "var(--color-surface-1)" }}>
-                      <span style={{ fontSize: "24px" }}>👤</span>
-                      <div style={{ minWidth: 0, flex: 1 }}>
-                        <div style={{ fontWeight: "bold", fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <Card key={student.id} padding="default" className="border border-[var(--color-border)] flex items-center gap-3 bg-[var(--color-surface-1)]">
+                      <span className="text-2xl">👤</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold text-sm truncate">
                           {student.full_name}
                         </div>
-                        <div style={{ fontSize: "12px", color: isOnline ? "var(--color-success)" : "var(--color-text-tertiary)" }}>
+                        <div className={`text-xs ${isOnline ? "text-[var(--color-success)]" : "text-[var(--color-text-tertiary)]"}`}>
                           {isOnline ? "En línea" : "Desconectado"} · {student.completed_tasks_count || 0}/{totalTasks} tareas
                         </div>
                       </div>
@@ -443,29 +425,29 @@ export default function SessionMonitorPage() {
     asideTitle = "Configuración y Actividad";
     aside = (
       <div className={styles.asideStack}>
-        <Card padding="default" style={{ border: "1px solid var(--color-border)", background: "var(--color-surface-1)" }}>
-          <h3 style={{ fontSize: "14px", fontWeight: 700, color: "var(--color-primary)", marginBottom: "8px" }}>
+        <Card padding="default" className="border border-[var(--color-border)] bg-[var(--color-surface-1)]">
+          <h3 className="text-sm font-bold text-[var(--color-primary)] mb-2">
             Consecuencias de Estado
           </h3>
           
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div className="flex flex-col gap-3">
             {sessionStatus === "active" && (
-              <p style={{ fontSize: "12px", color: "var(--color-text-secondary)", lineHeight: "1.4", margin: 0 }}>
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed m-0">
                 🟢 **Activa**: Los estudiantes admitidos pueden ingresar a su laboratorio y chatear con la IA para resolver su roadmap de tareas.
               </p>
             )}
             {sessionStatus === "paused" && (
-              <p style={{ fontSize: "12px", color: "var(--color-text-secondary)", lineHeight: "1.4", margin: 0 }}>
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed m-0">
                 🟡 **Pausada**: Los chats de los estudiantes quedan inhabilitados. No pueden enviar nuevos mensajes hasta que reanudes la sesión.
               </p>
             )}
             {sessionStatus === "closed" && (
-              <p style={{ fontSize: "12px", color: "var(--color-text-secondary)", lineHeight: "1.4", margin: 0 }}>
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed m-0">
                 🔴 **Cerrada**: La clase ha terminado. Los estudiantes ya no interactúan y el Route Handler inyectará `/finalizar` para emitir el reporte socrático final de la IA.
               </p>
             )}
             {sessionStatus === "draft" && (
-              <p style={{ fontSize: "12px", color: "var(--color-text-secondary)", lineHeight: "1.4", margin: 0 }}>
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed m-0">
                 ⚪ **Borrador**: La actividad está configurada pero aún no se ha abierto al ingreso de los alumnos en sus dispositivos.
               </p>
             )}
@@ -627,21 +609,21 @@ export default function SessionMonitorPage() {
     // === PESTAÑA 3: IA COPILOTO DE SESIÓN ===
     sidebarTitle = "Resumen de Sesión";
     sidebar = (
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        <Card padding="default" style={{ background: "var(--color-bg)", border: "1px solid var(--color-border)" }}>
-          <h3 style={{ fontSize: "14px", fontWeight: "bold", color: "var(--color-primary)", marginBottom: "8px" }}>
+      <div className="flex flex-col gap-4">
+        <Card padding="default" className="bg-[var(--color-bg)] border border-[var(--color-border)]">
+          <h3 className="text-sm font-bold text-[var(--color-primary)] mb-2">
             Objetivo de Aprendizaje
           </h3>
-          <p style={{ fontSize: "12px", color: "var(--color-text-secondary)", lineHeight: "1.4", margin: 0 }}>
+          <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed m-0">
             {pedagogicalObjective || "Sin objetivo pedagógico configurado."}
           </p>
         </Card>
         
-        <Card padding="default" style={{ background: "var(--color-bg)", border: "1px solid var(--color-border)" }}>
-          <h3 style={{ fontSize: "14px", fontWeight: "bold", color: "var(--color-primary)", marginBottom: "8px" }}>
+        <Card padding="default" className="bg-[var(--color-bg)] border border-[var(--color-border)]">
+          <h3 className="text-sm font-bold text-[var(--color-primary)] mb-2">
             Métricas Actuales
           </h3>
-          <div style={{ fontSize: "12px", display: "flex", flexDirection: "column", gap: "6px" }}>
+          <div className="text-xs flex flex-col gap-[6px]">
             <div>👥 Estudiantes aprobados: <strong>{students.length}</strong></div>
             <div>🟢 Conectados ahora: <strong>{students.filter(s => s.is_active).length}</strong></div>
             <div>⚠️ Alertas sin resolver: <strong>{alerts.filter(a => !a.is_resolved).length}</strong></div>
@@ -651,8 +633,8 @@ export default function SessionMonitorPage() {
     );
 
     main = (
-      <div className={styles.main} style={{ height: "100%" }}>
-        <div className={styles.mainBody} style={{ height: "100%", padding: 0 }}>
+      <div className={`${styles.main} h-full`}>
+        <div className={`${styles.mainBody} h-full p-0`}>
           <CopilotChat sessionId={sessionId} />
         </div>
       </div>
@@ -660,7 +642,7 @@ export default function SessionMonitorPage() {
 
     asideTitle = "Consejos del Copiloto";
     aside = (
-      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      <div className="flex flex-col gap-3">
         <AlertCard
           kind="moderation"
           title="¿Cómo interactuar?"

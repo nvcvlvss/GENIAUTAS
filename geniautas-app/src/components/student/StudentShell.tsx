@@ -19,7 +19,7 @@ export function StudentShell({
   onAsideClose,
 }: StudentShellProps) {
   return (
-    <div className={styles.shell}>
+    <div className={styles.shell} data-role="dashboard-frame">
       <header className={styles.header}>{header}</header>
       <main className={styles.main}>{main}</main>
       

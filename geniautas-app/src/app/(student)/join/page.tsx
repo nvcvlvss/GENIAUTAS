@@ -178,7 +178,7 @@ export default function JoinSessionPage() {
             </div>
             <h1 className={styles.title}>¡Hola, Geniauta!</h1>
             <p className={styles.subtitle}>
-              Únete a tu laboratorio paso a paso.
+              Paso {step} de 4: {STEPS[step - 1]}
             </p>
           </div>
 
@@ -197,7 +197,7 @@ export default function JoinSessionPage() {
                     >
                       <div className={styles.schoolCard}>
                         <div className={styles.schoolIconWrapper}>
-                          <SchoolIcon size={32} color="var(--color-primary)" aria-hidden />
+                          <SchoolIcon size={32} className="text-[var(--color-primary)]" aria-hidden />
                         </div>
                         <p className={styles.sessionTitle}>{school.name}</p>
                         <p className={styles.sessionMeta}>Toca para entrar</p>
@@ -237,7 +237,7 @@ export default function JoinSessionPage() {
                     }}
                   >
                     <div className={styles.sessionRow}>
-                      <BookOpen size={28} color="var(--color-primary)" aria-hidden />
+                      <BookOpen size={28} className="text-[var(--color-primary)]" aria-hidden />
                       <div>
                         <p className={styles.sessionTitle}>{session.title}</p>
                         <p className={styles.sessionMeta}>

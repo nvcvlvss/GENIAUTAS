@@ -67,7 +67,7 @@ export default function LoginPage() {
               <LogIn size={20} aria-hidden />
               <span>Iniciar sesión</span>
             </Button>
-            <p style={{ fontSize: "11px", color: "var(--color-text-tertiary)", marginTop: "8px", textAlign: "center", lineHeight: "1.4" }}>
+            <p className="text-[11px] text-[var(--color-text-tertiary)] mt-2 text-center leading-relaxed">
               Al iniciar sesión, accederás al panel para administrar laboratorios, lanzar sesiones y supervisar chats de tus alumnos en tiempo real.
             </p>
           </form>

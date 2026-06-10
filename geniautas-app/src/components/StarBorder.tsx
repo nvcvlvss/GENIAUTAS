@@ -7,14 +7,18 @@ type StarBorderProps<T extends React.ElementType> = React.ComponentPropsWithoutR
   color?: string;
   speed?: React.CSSProperties['animationDuration'];
   thickness?: number;
+  animating?: boolean;
 };
 
+// animations-disabled-fallback
+// Fallback to static border transitions if animating is false or system prefers reduced motion.
 const StarBorder = <T extends React.ElementType = 'button'>({
   as,
   className = '',
-  color = 'white',
+  color = 'var(--color-primary)',
   speed = '6s',
   thickness = 1,
+  animating = false, // non-animating by default as per interface-design skill
   children,
   ...rest
 }: StarBorderProps<T>) => {
@@ -30,14 +34,18 @@ const StarBorder = <T extends React.ElementType = 'button'>({
       }}
     >
       <div
-        className="absolute w-[300%] h-[50%] opacity-70 bottom-[-11px] right-[-250%] rounded-full animate-star-movement-bottom z-0"
+        className={`absolute w-[300%] h-[50%] opacity-50 bottom-[-11px] right-[-250%] rounded-full z-0 transition-all ${
+          animating ? 'animate-star-movement-bottom' : ''
+        }`}
         style={{
           background: `radial-gradient(circle, ${color}, transparent 10%)`,
           animationDuration: speed
         }}
       ></div>
       <div
-        className="absolute w-[300%] h-[50%] opacity-70 top-[-10px] left-[-250%] rounded-full animate-star-movement-top z-0"
+        className={`absolute w-[300%] h-[50%] opacity-50 top-[-10px] left-[-250%] rounded-full z-0 transition-all ${
+          animating ? 'animate-star-movement-top' : ''
+        }`}
         style={{
           background: `radial-gradient(circle, ${color}, transparent 10%)`,
           animationDuration: speed
