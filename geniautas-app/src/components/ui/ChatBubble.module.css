@@ -113,6 +113,43 @@
   border-radius: var(--radius-sm);
 }
 
+.markdown ul,
+.markdown ol {
+  margin: var(--sp-2) 0;
+  padding-left: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.markdown ul {
+  list-style-type: disc;
+}
+
+.markdown ol {
+  list-style-type: decimal;
+}
+
+.markdown li {
+  margin: 0;
+}
+
+.markdown strong {
+  font-weight: 700;
+}
+
+.markdown em {
+  font-style: italic;
+}
+
+.markdown blockquote {
+  border-left: 4px solid var(--color-primary);
+  margin: var(--sp-2) 0;
+  padding: var(--sp-1) 0 var(--sp-1) var(--sp-3);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
 .markdown pre code {
   background: transparent;
   padding: 0;

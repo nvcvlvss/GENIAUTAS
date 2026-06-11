@@ -5,6 +5,8 @@ import { Send, Loader2, Bot, Sparkles, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import styles from "./CopilotChat.module.css";
 
 interface Message {
@@ -115,7 +117,20 @@ export function CopilotChat({ sessionId }: CopilotChatProps) {
                 <div className={styles.roleLabel}>
                   {msg.role === "user" ? "Tú (Docente)" : "Copiloto Aydante"}
                 </div>
-                <div className={styles.messageContent}>{msg.content}</div>
+                <div className={styles.messageContent}>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      a: ({ href, children }) => (
+                        <a href={href} target="_blank" rel="noopener noreferrer">
+                          {children}
+                        </a>
+                      )
+                    }}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
+                </div>
               </div>
             </div>
           ))}
