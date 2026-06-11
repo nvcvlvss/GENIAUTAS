@@ -6,7 +6,7 @@ import { getChatHistory } from "@/lib/services/student";
 import { ChatView } from "@/components/student/ChatView";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Avatar } from "@/components/ui/Avatar";
-import { Loader2 } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 import styles from "./ChatMonitorView.module.css";
 
 const AVATAR_EMOJI: Record<string, string> = {
@@ -45,6 +45,30 @@ export function ChatMonitorView({
   const [botTyping, setBotTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
+
+  const [teacherMsg, setTeacherMsg] = useState("");
+  const [sendingMsg, setSendingMsg] = useState(false);
+
+  const handleSendTeacherMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!teacherMsg.trim() || sendingMsg) return;
+
+    setSendingMsg(true);
+    try {
+      const { error } = await supabase.from("messages").insert({
+        student_session_id: studentSessionId,
+        role: "system",
+        content: `[DOCENTE]: ${teacherMsg}`,
+      });
+      if (error) throw error;
+      setTeacherMsg("");
+    } catch (err) {
+      console.error("Error al enviar mensaje del docente:", err);
+      alert("No se pudo enviar el mensaje al estudiante.");
+    } finally {
+      setSendingMsg(false);
+    }
+  };
 
   useEffect(() => {
     setStudentTyping(false);
@@ -189,6 +213,30 @@ export function ChatMonitorView({
             )}
           </ChatView>
         </div>
+
+        {/* Enviar mensaje directo del docente */}
+        <form onSubmit={handleSendTeacherMessage} className={styles.teacherInputArea}>
+          <input
+            type="text"
+            value={teacherMsg}
+            onChange={(e) => setTeacherMsg(e.target.value)}
+            placeholder="Enviar mensaje directo al estudiante..."
+            className={styles.teacherInput}
+            disabled={sendingMsg}
+          />
+          <button
+            type="submit"
+            className={styles.teacherSendBtn}
+            disabled={sendingMsg || !teacherMsg.trim()}
+            title="Enviar mensaje"
+          >
+            {sendingMsg ? (
+              <Loader2 className={styles.spin} size={16} />
+            ) : (
+              <Send size={16} />
+            )}
+          </button>
+        </form>
       </div>
     </div>
   );

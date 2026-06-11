@@ -1,6 +1,6 @@
 "use client";
 
-import { Pause, Play, Settings, Users, Square } from "lucide-react";
+import { Pause, Play, Settings, Users, Square, Trash2 } from "lucide-react";
 import type { SessionStatus } from "@/types/database";
 import { Card } from "@/components/ui/Card";
 import { Chip, type ChipStatus } from "@/components/ui/Chip";
@@ -31,6 +31,7 @@ type SessionCardProps = {
   onPause: (id: string) => void;
   onResume: (id: string) => void;
   onClose: (id: string) => void;
+  onDelete: (id: string) => void;
 };
 
 export function SessionCard({
@@ -39,6 +40,7 @@ export function SessionCard({
   onPause,
   onResume,
   onClose,
+  onDelete,
 }: SessionCardProps) {
   const busy = updatingId === session.id;
   const agentLabel =
@@ -73,15 +75,25 @@ export function SessionCard({
           <Users size={18} />
         </Button>
         <Button
+          href={`/sessions/${session.id}/edit`}
+          variant="ghost"
+          size="sm"
+          title="Editar sesión"
+          iconOnly
+          aria-label="Editar sesión"
+        >
+          <Settings size={18} />
+        </Button>
+        <Button
           type="button"
           variant="ghost"
           size="sm"
-          title="Configuración"
+          title="Eliminar sesión"
           iconOnly
-          disabled
-          aria-label="Configuración (pronto)"
+          onClick={() => onDelete(session.id)}
+          aria-label="Eliminar sesión"
         >
-          <Settings size={18} />
+          <Trash2 size={18} style={{ color: "var(--color-danger)" }} />
         </Button>
         {session.status === "active" ? (
           <Button

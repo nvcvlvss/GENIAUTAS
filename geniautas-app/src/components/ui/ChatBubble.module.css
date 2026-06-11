@@ -8,7 +8,8 @@
 }
 
 .rowBot,
-.rowSystem {
+.rowSystem,
+.rowTeacher {
   justify-content: flex-start;
 }
 
@@ -45,6 +46,19 @@
   text-align: center;
   margin: var(--sp-2) auto;
   max-width: 90%;
+}
+
+.teacher {
+  background: var(--color-bg-elevated);
+  color: var(--color-text);
+  border-radius: 4px 18px 18px 18px; /* Tail on top-left */
+  margin-left: var(--sp-2);
+  border: 1px solid #a855f7; /* Lila/Purple border for Teacher */
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.15); /* Soft purple glow */
+}
+
+.teacher .meta {
+  color: #c084fc;
 }
 
 .meta {

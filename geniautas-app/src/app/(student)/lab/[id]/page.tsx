@@ -66,7 +66,23 @@ export default function StudentLabPage() {
     const studentSessionId = sessionStorage.getItem("geniautas_student_session");
     if (!studentSessionId) return;
 
-    const channel = supabase.channel(`chat_${studentSessionId}`);
+    const channel = supabase
+      .channel(`chat_${studentSessionId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `student_session_id=eq.${studentSessionId}`,
+        },
+        (payload: any) => {
+          setMessages((current) => {
+            if (current.some((m) => m.id === payload.new.id)) return current;
+            return [...current, payload.new];
+          });
+        }
+      );
     channel.subscribe();
     channelRef.current = channel;
 

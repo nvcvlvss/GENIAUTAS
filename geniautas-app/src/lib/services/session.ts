@@ -222,3 +222,73 @@ export async function rejectAccessRequest(requestId: string) {
 
   if (error) throw new Error(`REJECT_REQUEST_ERROR: ${error.message}`);
 }
+
+export async function updateSession(
+  sessionId: string,
+  formData: {
+    title: string;
+    grade: string;
+    school_id: string;
+    pedagogical_objective: string;
+    agent_config: AgentType;
+    tasks: string[];
+  }
+) {
+  const supabase = await createClient();
+
+  // 1. Update Session details
+  const { error: sessionError } = await supabase
+    .from('sessions')
+    .update({
+      title: formData.title,
+      grade: formData.grade,
+      school_id: formData.school_id,
+      pedagogical_objective: formData.pedagogical_objective,
+      agent_config: formData.agent_config,
+      last_activity_at: new Date().toISOString()
+    })
+    .eq('id', sessionId);
+
+  if (sessionError) {
+    throw new Error(`UPDATE_SESSION_ERROR: ${sessionError.message}`);
+  }
+
+  // 2. Delete existing roadmap tasks for this session
+  const { error: deleteTasksError } = await supabase
+    .from('roadmap_tasks')
+    .delete()
+    .eq('session_id', sessionId);
+
+  if (deleteTasksError) {
+    throw new Error(`DELETE_ROADMAP_ERROR: ${deleteTasksError.message}`);
+  }
+
+  // 3. Insert updated roadmap tasks
+  if (formData.tasks.length > 0) {
+    const tasksToInsert = formData.tasks.map((task, index) => ({
+      session_id: sessionId,
+      title: task,
+      order_index: index
+    }));
+
+    const { error: tasksError } = await supabase
+      .from('roadmap_tasks')
+      .insert(tasksToInsert);
+
+    if (tasksError) {
+      throw new Error(`INSERT_ROADMAP_ERROR: ${tasksError.message}`);
+    }
+  }
+}
+
+export async function deleteSession(sessionId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('sessions')
+    .delete()
+    .eq('id', sessionId);
+
+  if (error) {
+    throw new Error(`DELETE_SESSION_ERROR: ${error.message}`);
+  }
+}

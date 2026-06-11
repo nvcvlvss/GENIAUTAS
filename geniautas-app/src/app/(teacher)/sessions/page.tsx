@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
-import { getSessions, updateSessionStatus } from "@/lib/services/session";
+import { getSessions, updateSessionStatus, deleteSession } from "@/lib/services/session";
 import type { Database } from "@/types/database";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -55,6 +55,29 @@ export default function SessionsPage() {
     }
   };
 
+  const handleDeleteSession = async (sessionId: string) => {
+    if (
+      !confirm(
+        "¿Estás seguro de que quieres eliminar esta sesión? Esta acción no se puede deshacer y borrará permanentemente todo el historial, estudiantes y progresos asociados."
+      )
+    ) {
+      return;
+    }
+
+    setUpdatingId(sessionId);
+    setActionError(null);
+    try {
+      await deleteSession(sessionId);
+      await loadSessions();
+    } catch (err: unknown) {
+      setActionError(
+        `No se pudo eliminar la sesión: ${err instanceof Error ? err.message : "error desconocido"}`
+      );
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.page}>
@@ -99,6 +122,7 @@ export default function SessionsPage() {
               onPause={(id) => handleStatusChange(id, "paused")}
               onResume={(id) => handleStatusChange(id, "active")}
               onClose={(id) => handleStatusChange(id, "closed")}
+              onDelete={handleDeleteSession}
             />
           ))}
         </div>

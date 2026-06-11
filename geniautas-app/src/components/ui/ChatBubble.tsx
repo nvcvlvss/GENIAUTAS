@@ -19,20 +19,34 @@ function cx(...parts: (string | false | undefined)[]) {
 export function ChatBubble({ variant, children, meta, className }: ChatBubbleProps) {
   const isStudent = variant === "student" || variant === "user";
   const isBot = variant === "bot" || variant === "assistant";
+  
+  // Detect direct messages from the teacher using system role with special prefix
+  const isTeacher = variant === "system" && typeof children === "string" && children.startsWith("[DOCENTE]: ");
+  
+  // Clean prefix if it is a teacher message
+  const cleanedChildren = isTeacher && typeof children === "string"
+    ? children.substring("[DOCENTE]: ".length)
+    : children;
 
   const rowClass = isStudent
     ? styles.rowStudent
-    : isBot
-      ? styles.rowBot
-      : styles.rowSystem;
+    : isTeacher
+      ? styles.rowTeacher
+      : isBot
+        ? styles.rowBot
+        : styles.rowSystem;
 
   const bubbleClass = isStudent
     ? styles.student
-    : isBot
-      ? styles.bot
-      : styles.system;
+    : isTeacher
+      ? styles.teacher
+      : isBot
+        ? styles.bot
+        : styles.system;
 
-  const content = typeof children === "string" ? (
+  const displayMeta = isTeacher ? "Docente" : meta;
+
+  const content = typeof cleanedChildren === "string" ? (
     <div className={styles.markdown}>
       <ReactMarkdown 
         remarkPlugins={[remarkGfm]}
@@ -52,17 +66,17 @@ export function ChatBubble({ variant, children, meta, className }: ChatBubblePro
           )
         }}
       >
-        {children}
+        {cleanedChildren}
       </ReactMarkdown>
     </div>
   ) : (
-    children
+    cleanedChildren
   );
 
   return (
     <div className={cx(styles.row, rowClass, className)}>
       <div className={cx(styles.bubble, bubbleClass)}>
-        {meta ? <div className={styles.meta}>{meta}</div> : null}
+        {displayMeta ? <div className={styles.meta}>{displayMeta}</div> : null}
         <div className={styles.content}>{content}</div>
       </div>
     </div>

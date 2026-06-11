@@ -184,3 +184,56 @@
   margin-top: var(--sp-8);
   font-style: italic;
 }
+
+.teacherInputArea {
+  display: flex;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  background-color: var(--color-bg-elevated);
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.teacherInput {
+  flex: 1;
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-small);
+  outline: none;
+  transition: border-color 0.2s var(--ease-standard);
+}
+
+.teacherInput:focus {
+  border-color: var(--color-primary);
+}
+
+.teacherInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.teacherSendBtn {
+  background-color: var(--color-primary);
+  color: #0b1220;
+  border: none;
+  padding: var(--sp-2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s var(--ease-standard);
+}
+
+.teacherSendBtn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.teacherSendBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
