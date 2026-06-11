@@ -56,6 +56,7 @@ export default function StudentLabPage() {
   const [completingTaskId, setCompletingTaskId] = useState<string | null>(null);
   const [reflectionBusy, setReflectionBusy] = useState(false);
   const [isRoadmapOpen, setIsRoadmapOpen] = useState(false);
+  const [activeChatTab, setActiveChatTab] = useState<"ai" | "teacher">("ai");
 
   // Teacher-Student Direct Chat states
   const [teacherMessages, setTeacherMessages] = useState<any[]>([]);
@@ -188,7 +189,7 @@ export default function StudentLabPage() {
         behavior: "smooth",
       });
     }
-  }, [messages, sending]);
+  }, [messages, sending, activeChatTab]);
 
   useEffect(() => {
     if (teacherScrollRef.current) {
@@ -197,7 +198,7 @@ export default function StudentLabPage() {
         behavior: "smooth",
       });
     }
-  }, [teacherMessages]);
+  }, [teacherMessages, activeChatTab]);
 
   const handleSendDirect = async (message: string, files?: File[]) => {
     if ((!message.trim() && (!files || files.length === 0)) || sending || studentSession?.sessions?.status !== "active") return;
@@ -357,88 +358,118 @@ export default function StudentLabPage() {
   );
 
   const main = (
-    <div className={styles.mainLayoutContainer}>
-      {/* Columna Izquierda: Chat directo con el Docente */}
-      <div className={styles.teacherChatPanel}>
-        <div className={styles.teacherChatHeader}>
-          <span>💬 Chat con Docente</span>
-        </div>
-        <div className={styles.teacherChatHistory} ref={teacherScrollRef}>
-          {teacherMessages.length === 0 ? (
-            <div className={styles.emptyDMs}>
-              No hay mensajes con tu docente aún. Escríbele si tienes alguna duda.
-            </div>
-          ) : (
-            teacherMessages.map((m: any, i: number) => (
-              <ChatBubble
-                key={m.id || i}
-                variant={m.content.startsWith("[DM_DOCENTE]: ") ? "system" : "student"}
-              >
-                {m.content}
-              </ChatBubble>
-            ))
-          )}
-        </div>
-        <form onSubmit={handleSendTeacherDM} className={styles.teacherDMForm}>
-          <div className="flex-1">
-            <Input
-              type="text"
-              value={teacherDMInput}
-              onChange={(e) => setTeacherDMInput(e.target.value)}
-              placeholder={studentSession.sessions?.status === "active" ? "Mensaje al docente..." : "Sesión pausada"}
-              disabled={sendingTeacherDM || studentSession.sessions?.status !== "active"}
-            />
-          </div>
-          <Button
-            type="submit"
-            disabled={sendingTeacherDM || !teacherDMInput.trim() || studentSession.sessions?.status !== "active"}
-            loading={sendingTeacherDM}
-            className={styles.teacherDMButton}
-            title="Enviar mensaje"
-          >
-            <Send size={14} />
-          </Button>
-        </form>
+    <div className="flex flex-col flex-1 h-full w-full min-h-0 p-4">
+      {/* Tabs selector */}
+      <div className="flex gap-1 bg-[rgba(10,12,22,0.6)] p-1 rounded-md border border-[rgba(255,255,255,0.06)] self-start mb-4 select-none">
+        <button
+          type="button"
+          onClick={() => setActiveChatTab("ai")}
+          className={`px-4 py-1.5 rounded text-[12px] font-mono uppercase tracking-wider cursor-pointer border-none transition-all ${
+            activeChatTab === "ai"
+              ? "bg-[#38BDF8] text-[#020206] font-bold shadow-[0_0_10px_rgba(56,189,248,0.3)]"
+              : "bg-transparent text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          🤖 Chat con IA
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveChatTab("teacher")}
+          className={`px-4 py-1.5 rounded text-[12px] font-mono uppercase tracking-wider cursor-pointer border-none transition-all ${
+            activeChatTab === "teacher"
+              ? "bg-[#38BDF8] text-[#020206] font-bold shadow-[0_0_10px_rgba(56,189,248,0.3)]"
+              : "bg-transparent text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          💬 Chat con Docente
+        </button>
       </div>
 
-      {/* Columna Derecha: Chat principal con IA */}
-      <div className={styles.aiChatPanel}>
-        <div className={styles.chatScroll} ref={scrollRef}>
-          <ChatView>
-            {messages.length === 0 && (
-              <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"}>
-                ¡Hola! Soy tu asistente para este laboratorio. {studentSession.sessions?.pedagogical_objective}
-                
-                ¿En qué puedo ayudarte para comenzar con la primera tarea?
-              </ChatBubble>
-            )}
-            {messages.map((m: any, i: number) => (
-              <ChatBubble 
-                key={m.id || i} 
-                variant={m.role === "assistant" ? "bot" : m.role}
-                meta={m.role === "assistant" ? (AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente") : (m.role === "user" ? "Tú" : undefined)}
-              >
-                {m.content}
-              </ChatBubble>
-            ))}
-            {sending && (
-              <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"}>
-                <div className={styles.thinking}>
-                  <Loader2 className={styles.spinThinking} size={16} />
-                  <span>{AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"} está analizando...</span>
+      <div className={styles.mainLayoutContainer}>
+        {activeChatTab === "ai" ? (
+          /* Columna Derecha: Chat principal con IA */
+          <div className={styles.aiChatPanel}>
+            <div className={styles.chatScroll} ref={scrollRef}>
+              <ChatView>
+                {messages.length === 0 && (
+                  <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"}>
+                    ¡Hola! Soy tu asistente para este laboratorio. {studentSession.sessions?.pedagogical_objective}
+                    
+                    ¿En qué puedo ayudarte para comenzar con la primera tarea?
+                  </ChatBubble>
+                )}
+                {messages.map((m: any, i: number) => (
+                  <ChatBubble 
+                    key={m.id || i} 
+                    variant={m.role === "assistant" ? "bot" : m.role}
+                    meta={m.role === "assistant" ? (AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente") : (m.role === "user" ? "Tú" : undefined)}
+                  >
+                    {m.content}
+                  </ChatBubble>
+                ))}
+                {sending && (
+                  <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"}>
+                    <div className={styles.thinking}>
+                      <Loader2 className={styles.spinThinking} size={16} />
+                      <span>{AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"} está analizando...</span>
+                    </div>
+                  </ChatBubble>
+                )}
+              </ChatView>
+            </div>
+            <div className={styles.aiChatInputContainer}>
+              <PromptInputBox
+                placeholder={studentSession.sessions?.status === "active" ? "Escribe tu mensaje aquí…" : "Sesión pausada"}
+                isLoading={sending}
+                onSend={handleSendDirect}
+                onTyping={handleTyping}
+              />
+            </div>
+          </div>
+        ) : (
+          /* Columna Izquierda: Chat directo con el Docente */
+          <div className={styles.teacherChatPanel}>
+            <div className={styles.teacherChatHeader}>
+              <span>💬 Chat con Docente</span>
+            </div>
+            <div className={styles.teacherChatHistory} ref={teacherScrollRef}>
+              {teacherMessages.length === 0 ? (
+                <div className={styles.emptyDMs}>
+                  No hay mensajes con tu docente aún. Escríbele si tienes alguna duda.
                 </div>
-              </ChatBubble>
-            )}
-          </ChatView>
-        </div>
-        <div className={styles.aiChatInputContainer}>
-          <PromptInputBox
-            placeholder={studentSession.sessions?.status === "active" ? "Escribe tu mensaje aquí…" : "Sesión pausada"}
-            isLoading={sending}
-            onSend={handleSendDirect}
-            onTyping={handleTyping}
-          />
-        </div>
+              ) : (
+                teacherMessages.map((m: any, i: number) => (
+                  <ChatBubble
+                    key={m.id || i}
+                    variant={m.content.startsWith("[DM_DOCENTE]: ") ? "system" : "student"}
+                  >
+                    {m.content}
+                  </ChatBubble>
+                ))
+              )}
+            </div>
+            <form onSubmit={handleSendTeacherDM} className={styles.teacherDMForm}>
+              <div className="flex-1">
+                <Input
+                  type="text"
+                  value={teacherDMInput}
+                  onChange={(e) => setTeacherDMInput(e.target.value)}
+                  placeholder={studentSession.sessions?.status === "active" ? "Mensaje al docente..." : "Sesión pausada"}
+                  disabled={sendingTeacherDM || studentSession.sessions?.status !== "active"}
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={sendingTeacherDM || !teacherDMInput.trim() || studentSession.sessions?.status !== "active"}
+                loading={sendingTeacherDM}
+                className={styles.teacherDMButton}
+                title="Enviar mensaje"
+              >
+                <Send size={14} />
+              </Button>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );

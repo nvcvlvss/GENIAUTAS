@@ -196,13 +196,17 @@
 }
 
 .teacherChatPanel {
-  width: 300px;
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  flex: 1;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   background-color: rgba(10, 12, 22, 0.35);
   backdrop-filter: blur(10px);
-  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
   height: 100%;
 }
 
@@ -291,6 +295,9 @@
   flex-direction: column;
   min-width: 0;
   height: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .aiChatInputContainer {
@@ -299,14 +306,4 @@
   background-color: transparent;
 }
 
-@media (max-width: 900px) {
-  .mainLayoutContainer {
-    flex-direction: column;
-  }
-  .teacherChatPanel {
-    width: 100%;
-    height: 220px;
-    border-right: none;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-  }
-}
+

@@ -49,6 +49,7 @@ export function ChatMonitorView({
   
   const [directDMInput, setDirectDMInput] = useState("");
   const [sendingDirectDM, setSendingDirectDM] = useState(false);
+  const [activeChatTab, setActiveChatTab] = useState<"ai" | "teacher">("ai");
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const directScrollRef = useRef<HTMLDivElement>(null);
@@ -151,7 +152,7 @@ export function ChatMonitorView({
         behavior: "smooth",
       });
     }
-  }, [messages, studentTyping, botTyping]);
+  }, [messages, studentTyping, botTyping, activeChatTab]);
 
   useEffect(() => {
     if (directScrollRef.current) {
@@ -160,7 +161,7 @@ export function ChatMonitorView({
         behavior: "smooth",
       });
     }
-  }, [directMessages]);
+  }, [directMessages, activeChatTab]);
 
   if (loading) {
     return (
@@ -176,120 +177,150 @@ export function ChatMonitorView({
   const progressPercent = totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0;
 
   return (
-    <div className={styles.monitorLayout}>
-      {/* Columna Tablet Mockup (Chat con IA) */}
-      <div className={styles.mockupFrameColumn}>
-        <div className={styles.deviceFrame}>
-          {/* Header de telemetría de la tablet */}
-          <div className={styles.deviceHeader}>
-            <div className={styles.studentInfo}>
-              <Avatar size={48} emoji={emoji} className={styles.avatar} />
-              <div className={styles.metaTexts}>
-                <div className={styles.nameRow}>
-                  <span className={styles.studentName}>{studentName}</span>
-                  <span className={styles.statusIndicator}>
-                    <span className={`${styles.statusDot} ${student?.is_active ? styles.online : styles.offline}`} />
-                    {student?.is_active ? "En línea" : "Desconectado"}
-                  </span>
-                </div>
-                <div className={styles.progressRow}>
-                  <span className={styles.progressText}>
-                    Progreso: {completedCount} / {totalTasks} tareas
-                  </span>
-                  <div className={styles.progressBar}>
-                    <div className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
+    <div className="flex flex-col h-full w-full">
+      {/* Tabs selector */}
+      <div className="flex gap-1 bg-[rgba(10,12,22,0.6)] p-1 rounded-md border border-[rgba(255,255,255,0.06)] self-start mb-4 select-none">
+        <button
+          type="button"
+          onClick={() => setActiveChatTab("ai")}
+          className={`px-4 py-1.5 rounded text-[12px] font-mono uppercase tracking-wider cursor-pointer border-none transition-all ${
+            activeChatTab === "ai"
+              ? "bg-[#38BDF8] text-[#020206] font-bold shadow-[0_0_10px_rgba(56,189,248,0.3)]"
+              : "bg-transparent text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          🤖 Espejo Chat IA
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveChatTab("teacher")}
+          className={`px-4 py-1.5 rounded text-[12px] font-mono uppercase tracking-wider cursor-pointer border-none transition-all ${
+            activeChatTab === "teacher"
+              ? "bg-[#38BDF8] text-[#020206] font-bold shadow-[0_0_10px_rgba(56,189,248,0.3)]"
+              : "bg-transparent text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          💬 Chat Directo
+        </button>
+      </div>
+
+      <div className={styles.monitorLayout}>
+        {activeChatTab === "ai" ? (
+          /* Columna Tablet Mockup (Chat con IA) */
+          <div className={styles.mockupFrameColumn}>
+            <div className={styles.deviceFrame}>
+              {/* Header de telemetría de la tablet */}
+              <div className={styles.deviceHeader}>
+                <div className={styles.studentInfo}>
+                  <Avatar size={48} emoji={emoji} className={styles.avatar} />
+                  <div className={styles.metaTexts}>
+                    <div className={styles.nameRow}>
+                      <span className={styles.studentName}>{studentName}</span>
+                      <span className={styles.statusIndicator}>
+                        <span className={`${styles.statusDot} ${student?.is_active ? styles.online : styles.offline}`} />
+                        {student?.is_active ? "En línea" : "Desconectado"}
+                      </span>
+                    </div>
+                    <div className={styles.progressRow}>
+                      <span className={styles.progressText}>
+                        Progreso: {completedCount} / {totalTasks} tareas
+                      </span>
+                      <div className={styles.progressBar}>
+                        <div className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
+                      </div>
+                    </div>
                   </div>
                 </div>
+                <div className={styles.headerLabel}>
+                  <span className={styles.badge}>Pantalla del Estudiante</span>
+                </div>
+              </div>
+
+              {/* Vista del chat espejo */}
+              <div className={styles.chatArea} ref={scrollRef}>
+                <ChatView>
+                  {messages.length === 0 ? (
+                    <p className={styles.empty}>No hay mensajes en esta conversación todavía.</p>
+                  ) : (
+                    messages.map((m, i) => (
+                      <ChatBubble
+                        key={m.id || i}
+                        variant={m.role === "assistant" ? "bot" : m.role}
+                        meta={m.role === "assistant" ? (AGENT_CHAT_NAMES[agentConfig] ?? "Asistente") : "Tú"}
+                      >
+                        {m.content}
+                      </ChatBubble>
+                    ))
+                  )}
+
+                  {/* Alumno escribiendo en tiempo real */}
+                  {studentTyping && (
+                    <ChatBubble variant="student" meta="Tú">
+                      <div className={styles.thinking}>
+                        <Loader2 className={styles.spinThinking} size={16} />
+                        <span>Escribiendo mensaje...</span>
+                      </div>
+                    </ChatBubble>
+                  )}
+
+                  {/* IA generando respuesta en tiempo real */}
+                  {botTyping && (
+                    <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[agentConfig] ?? "Asistente"}>
+                      <div className={styles.thinking}>
+                        <Loader2 className={styles.spinThinking} size={16} />
+                        <span>{AGENT_CHAT_NAMES[agentConfig] ?? "Asistente"} está analizando...</span>
+                      </div>
+                    </ChatBubble>
+                  )}
+                </ChatView>
               </div>
             </div>
-            <div className={styles.headerLabel}>
-              <span className={styles.badge}>Pantalla del Estudiante</span>
-            </div>
           </div>
-
-          {/* Vista del chat espejo */}
-          <div className={styles.chatArea} ref={scrollRef}>
-            <ChatView>
-              {messages.length === 0 ? (
-                <p className={styles.empty}>No hay mensajes en esta conversación todavía.</p>
+        ) : (
+          /* Columna Derecha: Chat Directo Docente-Estudiante */
+          <div className={styles.directChatColumn}>
+            <div className={styles.directChatHeader}>
+              <span>💬 Chat Directo con Alumno</span>
+            </div>
+            <div className={styles.directChatMessages} ref={directScrollRef}>
+              {directMessages.length === 0 ? (
+                <p className={styles.emptyDirectChat}>
+                  No hay mensajes directos con el estudiante aún. ¡Comienza la conversación!
+                </p>
               ) : (
-                messages.map((m, i) => (
+                directMessages.map((m: any, i: number) => (
                   <ChatBubble
                     key={m.id || i}
-                    variant={m.role === "assistant" ? "bot" : m.role}
-                    meta={m.role === "assistant" ? (AGENT_CHAT_NAMES[agentConfig] ?? "Asistente") : "Tú"}
+                    variant={m.content.startsWith("[DM_DOCENTE]: ") ? "system" : "student"}
+                    meta={m.content.startsWith("[DM_DOCENTE]: ") ? "Docente" : studentName}
                   >
                     {m.content}
                   </ChatBubble>
                 ))
               )}
-
-              {/* Alumno escribiendo en tiempo real */}
-              {studentTyping && (
-                <ChatBubble variant="student" meta="Tú">
-                  <div className={styles.thinking}>
-                    <Loader2 className={styles.spinThinking} size={16} />
-                    <span>Escribiendo mensaje...</span>
-                  </div>
-                </ChatBubble>
-              )}
-
-              {/* IA generando respuesta en tiempo real */}
-              {botTyping && (
-                <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[agentConfig] ?? "Asistente"}>
-                  <div className={styles.thinking}>
-                    <Loader2 className={styles.spinThinking} size={16} />
-                    <span>{AGENT_CHAT_NAMES[agentConfig] ?? "Asistente"} está analizando...</span>
-                  </div>
-                </ChatBubble>
-              )}
-            </ChatView>
-          </div>
-        </div>
-      </div>
-
-      {/* Columna Derecha: Chat Directo Docente-Estudiante */}
-      <div className={styles.directChatColumn}>
-        <div className={styles.directChatHeader}>
-          <span>💬 Chat Directo con Alumno</span>
-        </div>
-        <div className={styles.directChatMessages} ref={directScrollRef}>
-          {directMessages.length === 0 ? (
-            <p className={styles.emptyDirectChat}>
-              No hay mensajes directos con el estudiante aún. ¡Comienza la conversación!
-            </p>
-          ) : (
-            directMessages.map((m: any, i: number) => (
-              <ChatBubble
-                key={m.id || i}
-                variant={m.content.startsWith("[DM_DOCENTE]: ") ? "system" : "student"}
-                meta={m.content.startsWith("[DM_DOCENTE]: ") ? "Docente" : studentName}
+            </div>
+            <form onSubmit={handleSendDirectDM} className={styles.directDMInputArea}>
+              <div className="flex-1">
+                <Input
+                  type="text"
+                  value={directDMInput}
+                  onChange={(e) => setDirectDMInput(e.target.value)}
+                  placeholder="Mensaje directo al estudiante..."
+                  disabled={sendingDirectDM}
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={sendingDirectDM || !directDMInput.trim()}
+                loading={sendingDirectDM}
+                className={styles.directDMSendBtn}
+                title="Enviar mensaje directo"
               >
-                {m.content}
-              </ChatBubble>
-            ))
-          )}
-        </div>
-        <form onSubmit={handleSendDirectDM} className={styles.directDMInputArea}>
-          <div className="flex-1">
-            <Input
-              type="text"
-              value={directDMInput}
-              onChange={(e) => setDirectDMInput(e.target.value)}
-              placeholder="Mensaje directo al estudiante..."
-              disabled={sendingDirectDM}
-            />
+                <Send size={14} />
+              </Button>
+            </form>
           </div>
-          <Button
-            type="submit"
-            disabled={sendingDirectDM || !directDMInput.trim()}
-            loading={sendingDirectDM}
-            className={styles.directDMSendBtn}
-            title="Enviar mensaje directo"
-          >
-            <Send size={14} />
-          </Button>
-        </form>
+        )}
       </div>
     </div>
   );

@@ -201,10 +201,16 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .directChatColumn {
-  width: 320px;
+  flex: 1;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   background-color: rgba(10, 12, 22, 0.35);
@@ -213,7 +219,6 @@
   box-shadow: var(--shadow-lg);
   border-radius: var(--radius-xl);
   overflow: hidden;
-  flex-shrink: 0;
   height: 100%;
 }
 
