@@ -17,16 +17,30 @@ function cx(...parts: (string | false | undefined)[]) {
 }
 
 export function ChatBubble({ variant, children, meta, className }: ChatBubbleProps) {
-  const isStudent = variant === "student" || variant === "user";
-  const isBot = variant === "bot" || variant === "assistant";
+  let isStudent = variant === "student" || variant === "user";
+  let isBot = variant === "bot" || variant === "assistant";
+  let isTeacher = false;
   
-  // Detect direct messages from the teacher using system role with special prefix
-  const isTeacher = variant === "system" && typeof children === "string" && children.startsWith("[DOCENTE]: ");
+  let cleanedChildren = children;
   
-  // Clean prefix if it is a teacher message
-  const cleanedChildren = isTeacher && typeof children === "string"
-    ? children.substring("[DOCENTE]: ".length)
-    : children;
+  if (typeof children === "string") {
+    if (children.startsWith("[DM_DOCENTE]: ")) {
+      isTeacher = true;
+      isStudent = false;
+      isBot = false;
+      cleanedChildren = children.substring("[DM_DOCENTE]: ".length);
+    } else if (children.startsWith("[DM_ESTUDIANTE]: ")) {
+      isStudent = true;
+      isBot = false;
+      isTeacher = false;
+      cleanedChildren = children.substring("[DM_ESTUDIANTE]: ".length);
+    } else if (children.startsWith("[DOCENTE]: ")) {
+      isTeacher = true;
+      isStudent = false;
+      isBot = false;
+      cleanedChildren = children.substring("[DOCENTE]: ".length);
+    }
+  }
 
   const rowClass = isStudent
     ? styles.rowStudent
@@ -44,7 +58,7 @@ export function ChatBubble({ variant, children, meta, className }: ChatBubblePro
         ? styles.bot
         : styles.system;
 
-  const displayMeta = isTeacher ? "Docente" : meta;
+  const displayMeta = isTeacher ? "Docente" : (isStudent && variant === "student" && !meta ? "Tú" : meta);
 
   const content = typeof cleanedChildren === "string" ? (
     <div className={styles.markdown}>

@@ -29,7 +29,7 @@ export function StudentShell({
       )}
       
       <aside className={`${styles.aside} ${asideOpen ? styles.open : ""}`}>{aside}</aside>
-      <footer className={styles.footer}>{footer}</footer>
+      {footer && <footer className={styles.footer}>{footer}</footer>}
     </div>
   );
 }

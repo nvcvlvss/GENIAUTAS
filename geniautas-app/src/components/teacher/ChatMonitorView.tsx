@@ -40,33 +40,36 @@ export function ChatMonitorView({
   agentConfig,
 }: ChatMonitorViewProps) {
   const [messages, setMessages] = useState<any[]>([]);
+  const [directMessages, setDirectMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [studentTyping, setStudentTyping] = useState(false);
   const [botTyping, setBotTyping] = useState(false);
+  
+  const [directDMInput, setDirectDMInput] = useState("");
+  const [sendingDirectDM, setSendingDirectDM] = useState(false);
+
   const scrollRef = useRef<HTMLDivElement>(null);
+  const directScrollRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
-  const [teacherMsg, setTeacherMsg] = useState("");
-  const [sendingMsg, setSendingMsg] = useState(false);
-
-  const handleSendTeacherMessage = async (e: React.FormEvent) => {
+  const handleSendDirectDM = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!teacherMsg.trim() || sendingMsg) return;
+    if (!directDMInput.trim() || sendingDirectDM) return;
 
-    setSendingMsg(true);
+    setSendingDirectDM(true);
     try {
       const { error } = await supabase.from("messages").insert({
         student_session_id: studentSessionId,
         role: "system",
-        content: `[DOCENTE]: ${teacherMsg}`,
+        content: `[DM_DOCENTE]: ${directDMInput}`,
       });
       if (error) throw error;
-      setTeacherMsg("");
+      setDirectDMInput("");
     } catch (err) {
-      console.error("Error al enviar mensaje del docente:", err);
-      alert("No se pudo enviar el mensaje al estudiante.");
+      console.error("Error al enviar DM del docente:", err);
+      alert("No se pudo enviar el mensaje directo.");
     } finally {
-      setSendingMsg(false);
+      setSendingDirectDM(false);
     }
   };
 
@@ -78,7 +81,13 @@ export function ChatMonitorView({
       setLoading(true);
       try {
         const history = await getChatHistory(studentSessionId);
-        setMessages(history);
+        
+        // Filter messages
+        const aiHistory = (history || []).filter((m: any) => !m.content.startsWith("[DM_"));
+        const dmHistory = (history || []).filter((m: any) => m.content.startsWith("[DM_"));
+
+        setMessages(aiHistory);
+        setDirectMessages(dmHistory);
       } catch (err) {
         console.error(err);
       } finally {
@@ -99,11 +108,22 @@ export function ChatMonitorView({
           filter: `student_session_id=eq.${studentSessionId}`,
         },
         (payload) => {
-          setMessages((current) => [...current, payload.new]);
-          if (payload.new.role === "user") {
-            setStudentTyping(false);
-          } else if (payload.new.role === "assistant") {
-            setBotTyping(false);
+          const newMsg = payload.new;
+          if (newMsg.content.startsWith("[DM_")) {
+            setDirectMessages((current) => {
+              if (current.some((m) => m.id === newMsg.id)) return current;
+              return [...current, newMsg];
+            });
+          } else {
+            setMessages((current) => {
+              if (current.some((m) => m.id === newMsg.id)) return current;
+              return [...current, newMsg];
+            });
+            if (newMsg.role === "user") {
+              setStudentTyping(false);
+            } else if (newMsg.role === "assistant") {
+              setBotTyping(false);
+            }
           }
         }
       )
@@ -131,109 +151,141 @@ export function ChatMonitorView({
     }
   }, [messages, studentTyping, botTyping]);
 
+  useEffect(() => {
+    if (directScrollRef.current) {
+      directScrollRef.current.scrollTo({
+        top: directScrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [directMessages]);
+
   if (loading) {
     return (
       <div className={styles.loading}>
         <Loader2 className={styles.spin} size={32} />
-        <p>Cargando conversación de {studentName}…</p>
+        <span>Cargando conversación del estudiante…</span>
       </div>
     );
   }
 
   const emoji = AVATAR_EMOJI[student?.avatar_id] ?? "👤";
-  const completedCount = student?.completed_tasks_count || 0;
-  const progressPercent = Math.min(100, Math.max(0, (completedCount / (totalTasks || 1)) * 100));
+  const completedCount = student?.completed_tasks_count ?? 0;
+  const progressPercent = totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0;
 
   return (
-    <div className={styles.root}>
-      {/* Dispositivo de Simulación (Tablet) con borde de color Aurora Cyan destacado */}
-      <div className={styles.deviceFrame} data-role="dashboard-frame">
-        {/* Encabezado con metadatos del estudiante */}
-        <div className={styles.deviceHeader}>
-          <div className={styles.studentInfo}>
-            <Avatar size={48} emoji={emoji} className={styles.avatar} />
-            <div className={styles.metaTexts}>
-              <div className={styles.nameRow}>
-                <span className={styles.studentName}>{studentName}</span>
-                <span className={styles.statusIndicator}>
-                  <span className={`${styles.statusDot} ${student?.is_active ? styles.online : styles.offline}`} />
-                  {student?.is_active ? "En línea" : "Desconectado"}
-                </span>
-              </div>
-              <div className={styles.progressRow}>
-                <span className={styles.progressText}>
-                  Progreso: {completedCount} / {totalTasks} tareas
-                </span>
-                <div className={styles.progressBar}>
-                  <div className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
+    <div className={styles.monitorLayout}>
+      {/* Columna Tablet Mockup (Chat con IA) */}
+      <div className={styles.mockupFrameColumn}>
+        <div className={styles.deviceFrame}>
+          {/* Header de telemetría de la tablet */}
+          <div className={styles.deviceHeader}>
+            <div className={styles.studentInfo}>
+              <Avatar size={48} emoji={emoji} className={styles.avatar} />
+              <div className={styles.metaTexts}>
+                <div className={styles.nameRow}>
+                  <span className={styles.studentName}>{studentName}</span>
+                  <span className={styles.statusIndicator}>
+                    <span className={`${styles.statusDot} ${student?.is_active ? styles.online : styles.offline}`} />
+                    {student?.is_active ? "En línea" : "Desconectado"}
+                  </span>
+                </div>
+                <div className={styles.progressRow}>
+                  <span className={styles.progressText}>
+                    Progreso: {completedCount} / {totalTasks} tareas
+                  </span>
+                  <div className={styles.progressBar}>
+                    <div className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
+                  </div>
                 </div>
               </div>
             </div>
+            <div className={styles.headerLabel}>
+              <span className={styles.badge}>Pantalla del Estudiante</span>
+            </div>
           </div>
-          <div className={styles.headerLabel}>
-            <span className={styles.badge}>Pantalla del Estudiante</span>
-          </div>
-        </div>
 
-        {/* Vista del chat espejo */}
-        <div className={styles.chatArea} ref={scrollRef}>
-          <ChatView>
-            {messages.length === 0 ? (
-              <p className={styles.empty}>No hay mensajes en esta conversación todavía.</p>
-            ) : (
-              messages.map((m, i) => (
-                <ChatBubble
-                  key={m.id || i}
-                  variant={m.role === "assistant" ? "bot" : m.role}
-                  meta={m.role === "assistant" ? (AGENT_CHAT_NAMES[agentConfig] ?? "Asistente") : "Tú"}
-                >
-                  {m.content}
+          {/* Vista del chat espejo */}
+          <div className={styles.chatArea} ref={scrollRef}>
+            <ChatView>
+              {messages.length === 0 ? (
+                <p className={styles.empty}>No hay mensajes en esta conversación todavía.</p>
+              ) : (
+                messages.map((m, i) => (
+                  <ChatBubble
+                    key={m.id || i}
+                    variant={m.role === "assistant" ? "bot" : m.role}
+                    meta={m.role === "assistant" ? (AGENT_CHAT_NAMES[agentConfig] ?? "Asistente") : "Tú"}
+                  >
+                    {m.content}
+                  </ChatBubble>
+                ))
+              )}
+
+              {/* Alumno escribiendo en tiempo real */}
+              {studentTyping && (
+                <ChatBubble variant="student" meta="Tú">
+                  <div className={styles.thinking}>
+                    <Loader2 className={styles.spinThinking} size={16} />
+                    <span>Escribiendo mensaje...</span>
+                  </div>
                 </ChatBubble>
-              ))
-            )}
+              )}
 
-            {/* Alumno escribiendo en tiempo real */}
-            {studentTyping && (
-              <ChatBubble variant="student" meta="Tú">
-                <div className={styles.thinking}>
-                  <Loader2 className={styles.spinThinking} size={16} />
-                  <span>Escribiendo mensaje...</span>
-                </div>
-              </ChatBubble>
-            )}
-
-            {/* IA generando respuesta en tiempo real */}
-            {botTyping && (
-              <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[agentConfig] ?? "Asistente"}>
-                <div className={styles.thinking}>
-                  <Loader2 className={styles.spinThinking} size={16} />
-                  <span>{AGENT_CHAT_NAMES[agentConfig] ?? "Asistente"} está analizando...</span>
-                </div>
-              </ChatBubble>
-            )}
-          </ChatView>
+              {/* IA generando respuesta en tiempo real */}
+              {botTyping && (
+                <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[agentConfig] ?? "Asistente"}>
+                  <div className={styles.thinking}>
+                    <Loader2 className={styles.spinThinking} size={16} />
+                    <span>{AGENT_CHAT_NAMES[agentConfig] ?? "Asistente"} está analizando...</span>
+                  </div>
+                </ChatBubble>
+              )}
+            </ChatView>
+          </div>
         </div>
+      </div>
 
-        {/* Enviar mensaje directo del docente */}
-        <form onSubmit={handleSendTeacherMessage} className={styles.teacherInputArea}>
+      {/* Columna Derecha: Chat Directo Docente-Estudiante */}
+      <div className={styles.directChatColumn}>
+        <div className={styles.directChatHeader}>
+          <span>💬 Chat Directo con Alumno</span>
+        </div>
+        <div className={styles.directChatMessages} ref={directScrollRef}>
+          {directMessages.length === 0 ? (
+            <p className={styles.emptyDirectChat}>
+              No hay mensajes directos con el estudiante aún. ¡Comienza la conversación!
+            </p>
+          ) : (
+            directMessages.map((m: any, i: number) => (
+              <ChatBubble
+                key={m.id || i}
+                variant={m.content.startsWith("[DM_DOCENTE]: ") ? "system" : "student"}
+              >
+                {m.content}
+              </ChatBubble>
+            ))
+          )}
+        </div>
+        <form onSubmit={handleSendDirectDM} className={styles.directDMInputArea}>
           <input
             type="text"
-            value={teacherMsg}
-            onChange={(e) => setTeacherMsg(e.target.value)}
-            placeholder="Enviar mensaje directo al estudiante..."
-            className={styles.teacherInput}
-            disabled={sendingMsg}
+            value={directDMInput}
+            onChange={(e) => setDirectDMInput(e.target.value)}
+            placeholder="Mensaje directo al estudiante..."
+            className={styles.directDMInput}
+            disabled={sendingDirectDM}
           />
           <button
             type="submit"
-            className={styles.teacherSendBtn}
-            disabled={sendingMsg || !teacherMsg.trim()}
-            title="Enviar mensaje"
+            className={styles.directDMSendBtn}
+            disabled={sendingDirectDM || !directDMInput.trim()}
+            title="Enviar mensaje directo"
           >
-            {sendingMsg ? (
-              <Loader2 className={styles.spin} size={16} />
+            {sendingDirectDM ? (
+              <Loader2 className={styles.spin} size={14} />
             ) : (
-              <Send size={16} />
+              <Send size={14} />
             )}
           </button>
         </form>

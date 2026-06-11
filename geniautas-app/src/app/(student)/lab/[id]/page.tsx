@@ -47,7 +47,6 @@ export default function StudentLabPage() {
   const [studentSession, setStudentSession] = useState<any>(null);
   const [tasks, setTasks] = useState<RoadmapTaskView[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
-  const [inputValue, setInputValue] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +56,13 @@ export default function StudentLabPage() {
   const [reflectionBusy, setReflectionBusy] = useState(false);
   const [isRoadmapOpen, setIsRoadmapOpen] = useState(false);
 
+  // Teacher-Student Direct Chat states
+  const [teacherMessages, setTeacherMessages] = useState<any[]>([]);
+  const [teacherDMInput, setTeacherDMInput] = useState("");
+  const [sendingTeacherDM, setSendingTeacherDM] = useState(false);
+
   const scrollRef = useRef<HTMLDivElement>(null);
+  const teacherScrollRef = useRef<HTMLDivElement>(null);
 
   const supabase = createClient();
   const channelRef = useRef<any>(null);
@@ -77,10 +82,18 @@ export default function StudentLabPage() {
           filter: `student_session_id=eq.${studentSessionId}`,
         },
         (payload: any) => {
-          setMessages((current) => {
-            if (current.some((m) => m.id === payload.new.id)) return current;
-            return [...current, payload.new];
-          });
+          const newMsg = payload.new;
+          if (newMsg.content.startsWith("[DM_")) {
+            setTeacherMessages((current) => {
+              if (current.some((m) => m.id === newMsg.id)) return current;
+              return [...current, newMsg];
+            });
+          } else {
+            setMessages((current) => {
+              if (current.some((m) => m.id === newMsg.id)) return current;
+              return [...current, newMsg];
+            });
+          }
         }
       );
     channel.subscribe();
@@ -151,7 +164,13 @@ export default function StudentLabPage() {
 
         setStudentSession(sessionData);
         await refreshRoadmap(tasksData || [], studentSessionId);
-        setMessages(historyData || []);
+
+        // Filter messages
+        const aiHistory = (historyData || []).filter((m: any) => !m.content.startsWith("[DM_"));
+        const dmHistory = (historyData || []).filter((m: any) => m.content.startsWith("[DM_"));
+
+        setMessages(aiHistory);
+        setTeacherMessages(dmHistory);
       } catch (err: any) {
         setError(err.message || "Error al cargar los datos");
       } finally {
@@ -169,6 +188,15 @@ export default function StudentLabPage() {
       });
     }
   }, [messages, sending]);
+
+  useEffect(() => {
+    if (teacherScrollRef.current) {
+      teacherScrollRef.current.scrollTo({
+        top: teacherScrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [teacherMessages]);
 
   const handleSendDirect = async (message: string, files?: File[]) => {
     if ((!message.trim() && (!files || files.length === 0)) || sending || studentSession?.sessions?.status !== "active") return;
@@ -212,6 +240,28 @@ export default function StudentLabPage() {
     } finally {
       setSending(false);
       sendBotTypingBroadcast(false);
+    }
+  };
+
+  const handleSendTeacherDM = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!teacherDMInput.trim() || sendingTeacherDM || studentSession?.sessions?.status !== "active") return;
+
+    setSendingTeacherDM(true);
+    try {
+      const { error } = await supabase.from("messages").insert({
+        student_session_id: studentSession.id,
+        role: "system",
+        content: `[DM_ESTUDIANTE]: ${teacherDMInput}`
+      });
+
+      if (error) throw error;
+      setTeacherDMInput("");
+    } catch (err) {
+      console.error("Error al enviar mensaje al docente:", err);
+      alert("No se pudo enviar el mensaje.");
+    } finally {
+      setSendingTeacherDM(false);
     }
   };
 
@@ -306,33 +356,91 @@ export default function StudentLabPage() {
   );
 
   const main = (
-    <div className={styles.chatScroll} ref={scrollRef}>
-      <ChatView>
-        {messages.length === 0 && (
-          <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"}>
-            ¡Hola! Soy tu asistente para este laboratorio. {studentSession.sessions?.pedagogical_objective}
-            
-            ¿En qué puedo ayudarte para comenzar con la primera tarea?
-          </ChatBubble>
-        )}
-        {messages.map((m: any, i: number) => (
-          <ChatBubble 
-            key={m.id || i} 
-            variant={m.role === "assistant" ? "bot" : m.role}
-            meta={m.role === "assistant" ? (AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente") : (m.role === "user" ? "Tú" : undefined)}
-          >
-            {m.content}
-          </ChatBubble>
-        ))}
-        {sending && (
-          <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"}>
-            <div className={styles.thinking}>
-              <Loader2 className={styles.spinThinking} size={16} />
-              <span>{AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"} está analizando...</span>
+    <div className={styles.mainLayoutContainer}>
+      {/* Columna Izquierda: Chat directo con el Docente */}
+      <div className={styles.teacherChatPanel}>
+        <div className={styles.teacherChatHeader}>
+          <span>💬 Chat con Docente</span>
+        </div>
+        <div className={styles.teacherChatHistory} ref={teacherScrollRef}>
+          {teacherMessages.length === 0 ? (
+            <div className={styles.emptyDMs}>
+              No hay mensajes con tu docente aún. Escríbele si tienes alguna duda.
             </div>
-          </ChatBubble>
-        )}
-      </ChatView>
+          ) : (
+            teacherMessages.map((m: any, i: number) => (
+              <ChatBubble
+                key={m.id || i}
+                variant={m.content.startsWith("[DM_DOCENTE]: ") ? "system" : "student"}
+              >
+                {m.content}
+              </ChatBubble>
+            ))
+          )}
+        </div>
+        <form onSubmit={handleSendTeacherDM} className={styles.teacherDMForm}>
+          <input
+            type="text"
+            value={teacherDMInput}
+            onChange={(e) => setTeacherDMInput(e.target.value)}
+            placeholder={studentSession.sessions?.status === "active" ? "Mensaje al docente..." : "Sesión pausada"}
+            className={styles.teacherDMInput}
+            disabled={sendingTeacherDM || studentSession.sessions?.status !== "active"}
+          />
+          <button
+            type="submit"
+            className={styles.teacherDMButton}
+            disabled={sendingTeacherDM || !teacherDMInput.trim() || studentSession.sessions?.status !== "active"}
+            title="Enviar mensaje"
+          >
+            {sendingTeacherDM ? (
+              <Loader2 className={styles.spin} size={14} />
+            ) : (
+              <Send size={14} />
+            )}
+          </button>
+        </form>
+      </div>
+
+      {/* Columna Derecha: Chat principal con IA */}
+      <div className={styles.aiChatPanel}>
+        <div className={styles.chatScroll} ref={scrollRef}>
+          <ChatView>
+            {messages.length === 0 && (
+              <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"}>
+                ¡Hola! Soy tu asistente para este laboratorio. {studentSession.sessions?.pedagogical_objective}
+                
+                ¿En qué puedo ayudarte para comenzar con la primera tarea?
+              </ChatBubble>
+            )}
+            {messages.map((m: any, i: number) => (
+              <ChatBubble 
+                key={m.id || i} 
+                variant={m.role === "assistant" ? "bot" : m.role}
+                meta={m.role === "assistant" ? (AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente") : (m.role === "user" ? "Tú" : undefined)}
+              >
+                {m.content}
+              </ChatBubble>
+            ))}
+            {sending && (
+              <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"}>
+                <div className={styles.thinking}>
+                  <Loader2 className={styles.spinThinking} size={16} />
+                  <span>{AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"} está analizando...</span>
+                </div>
+              </ChatBubble>
+            )}
+          </ChatView>
+        </div>
+        <div className={styles.aiChatInputContainer}>
+          <PromptInputBox
+            placeholder={studentSession.sessions?.status === "active" ? "Escribe tu mensaje aquí…" : "Sesión pausada"}
+            isLoading={sending}
+            onSend={handleSendDirect}
+            onTyping={handleTyping}
+          />
+        </div>
+      </div>
     </div>
   );
 
@@ -369,26 +477,13 @@ export default function StudentLabPage() {
     </div>
   );
 
-  const footer = (
-    <div className={styles.footerRow}>
-      <div className="p-6 pb-12 max-w-5xl mx-auto w-full">
-        <PromptInputBox
-          placeholder={studentSession.sessions?.status === "active" ? "Escribe tu mensaje aquí…" : "Sesión pausada"}
-          isLoading={sending}
-          onSend={handleSendDirect}
-          onTyping={handleTyping}
-        />
-      </div>
-    </div>
-  );
-
   return (
     <>
       <StudentShell
         header={header}
         main={main}
         aside={aside}
-        footer={footer}
+        footer={null}
         asideOpen={isRoadmapOpen}
         onAsideClose={() => setIsRoadmapOpen(false)}
       />
