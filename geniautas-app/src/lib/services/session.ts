@@ -76,7 +76,7 @@ export async function getSessionById(sessionId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("sessions")
-    .select("id, title, status, grade, school_id")
+    .select("id, title, status, grade, school_id, agent_config")
     .eq("id", sessionId)
     .single();
 

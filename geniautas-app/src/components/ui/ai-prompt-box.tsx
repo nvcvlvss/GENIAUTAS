@@ -422,16 +422,49 @@ interface PromptInputBoxProps {
   isLoading?: boolean;
   placeholder?: string;
   className?: string;
+  onTyping?: (isTyping: boolean) => void;
 }
 
 export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref: React.Ref<HTMLDivElement>) => {
-  const { onSend = () => {}, isLoading = false, placeholder = "Escribe tu mensaje...", className } = props;
+  const { onSend = () => {}, isLoading = false, placeholder = "Escribe tu mensaje...", className, onTyping } = props;
   const [input, setInput] = React.useState("");
   const [files, setFiles] = React.useState<File[]>([]);
   const [filePreviews, setFilePreviews] = React.useState<{ [key: string]: string }>({});
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   const [isRecording, setIsRecording] = React.useState(false);
   const [isFocused, setIsFocused] = React.useState(false);
+
+  const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [isTyping, setIsTyping] = React.useState(false);
+
+  const handleInputChange = (val: string) => {
+    setInput(val);
+    if (onTyping) {
+      if (val.trim() !== "") {
+        if (!isTyping) {
+          setIsTyping(true);
+          onTyping(true);
+        }
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => {
+          setIsTyping(false);
+          onTyping(false);
+        }, 2000);
+      } else {
+        if (isTyping) {
+          setIsTyping(false);
+          onTyping(false);
+        }
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    };
+  }, [isTyping, onTyping]);
   
   const uploadInputRef = React.useRef<HTMLInputElement>(null);
   const promptBoxRef = React.useRef<HTMLDivElement>(null);
@@ -501,6 +534,11 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
 
   const handleSubmit = () => {
     if (input.trim() || files.length > 0) {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      if (isTyping) {
+        setIsTyping(false);
+        onTyping?.(false);
+      }
       onSend(input, files);
       setInput("");
       setFiles([]);
@@ -528,7 +566,7 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
     >
       <PromptInput
         value={input}
-        onValueChange={setInput}
+        onValueChange={handleInputChange}
         isLoading={isLoading}
         onSubmit={handleSubmit}
         className={cn(

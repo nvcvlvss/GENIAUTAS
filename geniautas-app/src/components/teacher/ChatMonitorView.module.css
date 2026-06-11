@@ -2,30 +2,147 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-bg);
-  padding: var(--sp-4);
+  background-color: transparent;
+  padding: 0;
   overflow: hidden;
+}
+
+.deviceFrame {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg);
+  border: 2px solid var(--color-primary);
+  box-shadow: var(--glow-primary-sm);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+}
+
+.deviceHeader {
+  padding: var(--sp-3) var(--sp-4);
+  background-color: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.studentInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.avatar {
+  flex-shrink: 0;
+}
+
+.metaTexts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.studentName {
+  font-family: var(--font-heading);
+  font-size: var(--text-body);
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.statusIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-tiny);
+  color: var(--color-text-secondary);
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-circle);
+  display: inline-block;
+}
+
+.online {
+  background-color: var(--color-success);
+  box-shadow: 0 0 6px var(--color-success);
+}
+
+.offline {
+  background-color: var(--color-text-tertiary);
+}
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.progressText {
+  font-size: var(--text-tiny);
+  color: var(--color-text-tertiary);
+}
+
+.progressBar {
+  width: 80px;
+  height: 4px;
+  background-color: var(--color-surface-2);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-pill);
+  transition: width 0.4s var(--ease-standard);
+}
+
+.headerLabel {
+  flex-shrink: 0;
+}
+
+.badge {
+  background: rgba(51, 199, 216, 0.1);
+  color: var(--color-primary);
+  font-size: var(--text-tiny);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(51, 199, 216, 0.2);
 }
 
 .chatArea {
   flex: 1;
   overflow-y: auto;
-  padding-right: var(--sp-2);
-}
-
-.header {
-  padding: var(--sp-3) var(--sp-4);
-  background-color: var(--color-surface-1);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--sp-4);
-  font-size: var(--text-small);
-  color: var(--color-text-secondary);
-  border-left: 4px solid var(--color-primary);
-  flex-shrink: 0;
-}
-
-.header strong {
-  color: var(--color-text);
+  padding: var(--sp-4);
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
 }
 
 .loading {
@@ -41,6 +158,19 @@
 .spin {
   animation: spin 1s linear infinite;
   color: var(--color-primary);
+}
+
+.thinking {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+  font-style: italic;
+}
+
+.spinThinking {
+  animation: spin 1.5s linear infinite;
 }
 
 @keyframes spin {

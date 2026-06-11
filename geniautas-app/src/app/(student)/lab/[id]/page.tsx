@@ -21,7 +21,14 @@ import {
 } from "@/lib/services/student";
 import { ReflectionModal } from "@/components/student/ReflectionModal";
 import { GRADE_LABELS } from "@/lib/constants";
+import { createClient } from "@/lib/supabase/client";
 import styles from "./page.module.css";
+
+const AGENT_CHAT_NAMES: Record<string, string> = {
+  constructivista: "Pensabot",
+  cognitivista: "Construbot",
+  neutro: "Asistente",
+};
 
 const AVATAR_EMOJI: Record<string, string> = {
   "1": "🦊",
@@ -51,6 +58,42 @@ export default function StudentLabPage() {
   const [isRoadmapOpen, setIsRoadmapOpen] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const supabase = createClient();
+  const channelRef = useRef<any>(null);
+
+  useEffect(() => {
+    const studentSessionId = sessionStorage.getItem("geniautas_student_session");
+    if (!studentSessionId) return;
+
+    const channel = supabase.channel(`chat_${studentSessionId}`);
+    channel.subscribe();
+    channelRef.current = channel;
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase]);
+
+  const handleTyping = (isTyping: boolean) => {
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: "broadcast",
+        event: "typing",
+        payload: { sender: "student", isTyping },
+      });
+    }
+  };
+
+  const sendBotTypingBroadcast = (isTyping: boolean) => {
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: "broadcast",
+        event: "typing",
+        payload: { sender: "bot", isTyping },
+      });
+    }
+  };
 
   const refreshRoadmap = async (tasksData: any[], studentSessionId: string) => {
     try {
@@ -117,6 +160,7 @@ export default function StudentLabPage() {
     const userMsg = { role: "user", content: message, id: Date.now().toString() };
     setMessages(prev => [...prev, userMsg]);
     setSending(true);
+    sendBotTypingBroadcast(true);
 
     try {
       const res = await fetch("/api/chat", {
@@ -151,6 +195,7 @@ export default function StudentLabPage() {
       setMessages(prev => [...prev, { role: "system", content: "Error al enviar mensaje. Revisa tu conexión." }]);
     } finally {
       setSending(false);
+      sendBotTypingBroadcast(false);
     }
   };
 
@@ -248,7 +293,7 @@ export default function StudentLabPage() {
     <div className={styles.chatScroll} ref={scrollRef}>
       <ChatView>
         {messages.length === 0 && (
-          <ChatBubble variant="bot" meta="Agente pedagógico">
+          <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"}>
             ¡Hola! Soy tu asistente para este laboratorio. {studentSession.sessions?.pedagogical_objective}
             
             ¿En qué puedo ayudarte para comenzar con la primera tarea?
@@ -258,16 +303,16 @@ export default function StudentLabPage() {
           <ChatBubble 
             key={m.id || i} 
             variant={m.role === "assistant" ? "bot" : m.role}
-            meta={m.role === "assistant" ? "Agente" : undefined}
+            meta={m.role === "assistant" ? (AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente") : (m.role === "user" ? "Tú" : undefined)}
           >
             {m.content}
           </ChatBubble>
         ))}
         {sending && (
-          <ChatBubble variant="bot" meta="Agente">
+          <ChatBubble variant="bot" meta={AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"}>
             <div className={styles.thinking}>
               <Loader2 className={styles.spinThinking} size={16} />
-              <span>Geniauta está analizando...</span>
+              <span>{AGENT_CHAT_NAMES[studentSession?.sessions?.agent_config] ?? "Asistente"} está analizando...</span>
             </div>
           </ChatBubble>
         )}
@@ -315,6 +360,7 @@ export default function StudentLabPage() {
           placeholder={studentSession.sessions?.status === "active" ? "Escribe tu mensaje aquí…" : "Sesión pausada"}
           isLoading={sending}
           onSend={handleSendDirect}
+          onTyping={handleTyping}
         />
       </div>
     </div>

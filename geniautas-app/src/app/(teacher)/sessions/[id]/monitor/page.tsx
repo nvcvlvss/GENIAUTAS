@@ -57,6 +57,7 @@ export default function SessionMonitorPage() {
   const [sessionGrade, setSessionGrade] = useState<string | null>(null);
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>("draft");
   const [pedagogicalObjective, setPedagogicalObjective] = useState("");
+  const [agentConfig, setAgentConfig] = useState<string>("neutro");
   const [statusBusy, setStatusBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState<{
@@ -82,6 +83,7 @@ export default function SessionMonitorPage() {
         setSessionTitle(session.title ?? "Sesión");
         setSessionGrade(session.grade ?? null);
         setSessionStatus((session.status as SessionStatus) ?? "draft");
+        setAgentConfig(session.agent_config ?? "neutro");
         setTotalTasks(tasksData.length);
 
         // Consultar objetivo pedagógico completo
@@ -559,6 +561,9 @@ export default function SessionMonitorPage() {
             <ChatMonitorView
               studentSessionId={selectedStudentId}
               studentName={selectedStudent.full_name}
+              student={selectedStudent}
+              totalTasks={totalTasks}
+              agentConfig={agentConfig}
             />
           ) : (
             <EmptyState
