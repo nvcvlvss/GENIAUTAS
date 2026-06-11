@@ -17,7 +17,7 @@
   border-radius: var(--radius-md);
   border: 1px solid rgba(239, 68, 68, 0.25);
   background: rgba(239, 68, 68, 0.12);
-  color: #EF4444;
+  color: var(--color-danger);
   font-size: var(--text-small);
   margin-bottom: var(--sp-4);
 }
@@ -25,5 +25,5 @@
 .loading {
   padding: var(--sp-6);
   text-align: center;
-  color: #94A3B8;
+  color: var(--color-text-tertiary);
 }

@@ -12,7 +12,7 @@
 }
 
 .risk .title {
-  color: #EF4444;
+  color: var(--color-danger);
 }
 
 .moderation {
@@ -21,7 +21,7 @@
 }
 
 .moderation .title {
-  color: #F59E0B;
+  color: var(--color-warning);
 }
 
 .session {
@@ -30,7 +30,7 @@
 }
 
 .session .title {
-  color: #3B82F6;
+  color: var(--color-info);
 }
 
 .type {

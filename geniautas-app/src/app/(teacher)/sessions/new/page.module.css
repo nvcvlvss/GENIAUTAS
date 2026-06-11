@@ -8,7 +8,7 @@
 
 .loading {
   padding: var(--sp-8);
-  color: #94A3B8;
+  color: var(--color-text-tertiary);
 }
 
 .stack {
@@ -23,7 +23,7 @@
   line-height: var(--line-h4);
   font-weight: 600;
   margin: 0 0 var(--sp-3);
-  color: #F8FAFC;
+  color: var(--color-text);
 }
 
 .row {
@@ -50,7 +50,7 @@
   border-radius: var(--radius-md);
   border: 1px solid rgba(239, 68, 68, 0.25);
   background: rgba(239, 68, 68, 0.12);
-  color: #EF4444;
+  color: var(--color-danger);
   font-size: var(--text-small);
 }
 

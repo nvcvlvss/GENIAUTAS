@@ -17,7 +17,7 @@
   gap: var(--sp-2);
   margin-bottom: var(--sp-4);
   padding: var(--sp-2) 0;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .step {
@@ -26,16 +26,16 @@
   font-family: var(--font-mono);
   font-size: var(--text-tiny);
   font-weight: 600;
-  color: #475569;
+  color: var(--color-text-tertiary);
 }
  
 .stepActive {
-  color: #38BDF8;
-  text-shadow: 0 0 8px rgba(56, 189, 248, 0.2);
+  color: var(--color-primary);
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
 }
  
 .stepDone {
-  color: #10B981;
+  color: var(--color-success);
 }
 
 .brand {
@@ -54,11 +54,12 @@
   height: 40px;
   border-radius: var(--radius-md);
   margin-bottom: var(--sp-2);
-  background: #1E293B;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  color: #38BDF8;
+  background: rgba(10, 12, 22, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-primary);
   font-family: var(--font-heading);
   font-weight: 700;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
 }
 
 .title {
@@ -67,13 +68,13 @@
   line-height: var(--line-h2);
   font-weight: 700;
   margin: 0 0 var(--sp-2);
-  color: #F8FAFC;
+  color: var(--color-text);
 }
  
 .subtitle {
   margin: 0;
   font-size: var(--text-small);
-  color: #94A3B8;
+  color: var(--color-text-tertiary);
 }
 
 .alert {
@@ -160,16 +161,17 @@
   width: 64px;
   height: 64px;
   border-radius: var(--radius-circle);
-  background: #1E293B;
+  background: rgba(10, 12, 22, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--color-primary);
 }
 
 .carouselHint {
   font-size: var(--text-tiny);
-  color: #94A3B8;
+  color: var(--color-text-tertiary);
   text-align: center;
   font-style: italic;
   margin: 0;
@@ -184,20 +186,20 @@
 
 .sessionTitle {
   font-weight: 600;
-  color: #F8FAFC;
+  color: var(--color-text);
   margin: 0 0 var(--sp-1);
 }
 
 .sessionMeta {
   margin: 0;
   font-size: var(--text-small);
-  color: #CBD5E1;
+  color: var(--color-text-secondary);
 }
 
 .empty {
   text-align: center;
   padding: var(--sp-5);
-  color: #94A3B8;
+  color: var(--color-text-tertiary);
   font-size: var(--text-small);
 }
 

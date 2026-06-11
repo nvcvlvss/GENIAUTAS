@@ -11,9 +11,12 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-bg-elevated);
-  border: 2px solid var(--color-surface-2);
-  box-shadow: var(--shadow-lg);
+  background-color: rgba(10, 12, 22, 0.45);
+  backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 40px rgba(0, 0, 0, 0.4);
   border-radius: var(--radius-xl);
   overflow: hidden;
   position: relative;
@@ -152,19 +155,19 @@
   align-items: center;
   justify-content: center;
   gap: var(--sp-4);
-  color: #787774;
+  color: var(--color-text-tertiary);
 }
 
 .spin {
   animation: spin 1s linear infinite;
-  color: #111111;
+  color: var(--color-primary);
 }
 
 .thinking {
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  color: #787774;
+  color: var(--color-text-tertiary);
   font-size: var(--text-small);
   font-style: italic;
 }
@@ -180,7 +183,7 @@
 
 .empty {
   text-align: center;
-  color: #B0AEA6;
+  color: var(--color-text-tertiary);
   margin-top: var(--sp-8);
   font-style: italic;
 }
@@ -204,8 +207,9 @@
   width: 320px;
   display: flex;
   flex-direction: column;
-  background-color: rgba(30, 41, 59, 0.5);
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  background-color: rgba(10, 12, 22, 0.35);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: var(--shadow-lg);
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -215,8 +219,8 @@
 
 .directChatHeader {
   padding: var(--sp-3) var(--sp-4);
-  background-color: rgba(167, 139, 250, 0.08);
-  border-bottom: 1px solid rgba(167, 139, 250, 0.2);
+  background-color: rgba(167, 139, 250, 0.04);
+  border-bottom: 1px solid rgba(167, 139, 250, 0.12);
   font-family: var(--font-heading);
   font-size: var(--text-body);
   font-weight: 700;
@@ -237,7 +241,7 @@
 
 .emptyDirectChat {
   text-align: center;
-  color: #B0AEA6;
+  color: var(--color-text-tertiary);
   margin-top: var(--sp-8);
   font-style: italic;
   font-size: var(--text-small);
@@ -249,8 +253,8 @@
   display: flex;
   gap: var(--sp-2);
   padding: var(--sp-3) var(--sp-4);
-  background-color: rgba(167, 139, 250, 0.04);
-  border-top: 1px solid rgba(167, 139, 250, 0.2);
+  background-color: rgba(10, 12, 22, 0.45);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   align-items: center;
 }
 
