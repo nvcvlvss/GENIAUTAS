@@ -2,26 +2,26 @@
 
 :root {
   /* Colors */
-  --color-bg: #0b1220;
-  --color-bg-elevated: #14213a;
-  --color-surface-1: #1b2a44;
-  --color-surface-2: #243552;
-  --color-surface-3: #314666;
-  --color-primary: #33c7d8;
-  --color-primary-strong: #1fb4c7;
-  --color-progress: #f5c451;
-  --color-success: #78d17c;
-  --color-warning: #f2a93b;
-  --color-danger: #f26b6b;
-  --color-info: #60a5fa;
-  --color-text: #f5f7fb;
-  --color-text-secondary: #c7d2e3;
-  --color-text-tertiary: #93a4bf;
-  --color-border: rgba(199, 210, 227, 0.14);
-  --color-border-strong: rgba(199, 210, 227, 0.24);
-  --color-overlay: rgba(11, 18, 32, 0.72);
+  --color-bg: #0F172A;
+  --color-bg-elevated: #1E293B;
+  --color-surface-1: #1E293B;
+  --color-surface-2: #334155;
+  --color-surface-3: #475569;
+  --color-primary: #38BDF8;
+  --color-primary-strong: #0EA5E9;
+  --color-progress: #F59E0B;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+  --color-text: #F8FAFC;
+  --color-text-secondary: #CBD5E1;
+  --color-text-tertiary: #94A3B8;
+  --color-border: rgba(148, 163, 184, 0.12);
+  --color-border-strong: rgba(148, 163, 184, 0.25);
+  --color-overlay: rgba(15, 23, 42, 0.75);
 
-  /* Typography (loaded fonts wired in layout.tsx) */
+  /* Typography */
   --font-heading: var(--font-heading-loaded), "Fredoka", system-ui, sans-serif;
   --font-body: var(--font-body-loaded), "DM Sans", system-ui, sans-serif;
   --font-mono: var(--font-mono-loaded), "Space Mono", ui-monospace, monospace;
@@ -60,17 +60,14 @@
   --radius-xl: 24px;
   --radius-pill: 9999px;
 
-  /* Shadow and glow */
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.34);
-  --glow-primary-sm: 0 0 0 3px rgba(51, 199, 216, 0.18),
-    0 0 16px rgba(51, 199, 216, 0.18);
-  --glow-primary-md: 0 0 0 3px rgba(51, 199, 216, 0.24),
-    0 0 24px rgba(51, 199, 216, 0.24);
-  --glow-progress-sm: 0 0 16px rgba(245, 196, 81, 0.2);
-  --glow-progress-md: 0 0 24px rgba(245, 196, 81, 0.28);
-  --glow-danger-sm: 0 0 16px rgba(242, 107, 107, 0.22);
+  /* Shadows & Glows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --glow-primary-sm: 0 0 0 3px rgba(56, 189, 248, 0.15);
+  --glow-primary-md: 0 0 12px rgba(56, 189, 248, 0.2);
+  --glow-progress-sm: 0 0 12px rgba(245, 158, 11, 0.15);
+  --glow-danger-sm: 0 0 12px rgba(239, 68, 68, 0.15);
 
   /* Layout */
   --container-student: 980px;
@@ -93,10 +90,10 @@
   --popover: var(--color-bg-elevated);
   --popover-foreground: var(--color-text);
   --primary: var(--color-primary);
-  --primary-foreground: #0b1220;
+  --primary-foreground: #0F172A;
   --secondary: var(--color-surface-2);
   --secondary-foreground: var(--color-text);
-  --muted: var(--color-surface-1);
+  --muted: var(--color-surface-2);
   --muted-foreground: var(--color-text-tertiary);
   --accent: var(--color-surface-3);
   --accent-foreground: var(--color-text);
@@ -106,7 +103,6 @@
   --input: var(--color-surface-2);
   --ring: var(--color-primary);
   --radius: 0.75rem;
-
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -204,10 +200,10 @@ h4 {
   animation: spin 1s linear infinite;
 }
 
-/* Scrollbar (dark) */
+/* Scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-surface-3) var(--color-bg);
+  scrollbar-color: #334155 #0F172A;
 }
 
 *::-webkit-scrollbar {
@@ -216,11 +212,11 @@ h4 {
 }
 
 *::-webkit-scrollbar-track {
-  background: var(--color-bg);
+  background: #0F172A;
 }
 
 *::-webkit-scrollbar-thumb {
-  background: var(--color-surface-3);
+  background: #334155;
   border-radius: var(--radius-pill);
 }
 
@@ -289,12 +285,12 @@ h4 {
 
 @layer utilities {
   .bg-internal-radial {
-    background: radial-gradient(circle at center, #0b1220 0%, #14213a 45%, #1b2a44 100%);
+    background: radial-gradient(circle at center, #1E293B 0%, #0F172A 100%);
   }
 
   .glass-panel {
-    background-color: color-mix(in srgb, var(--color-surface-1) 40%, transparent);
-    border: 1px solid var(--color-border-strong);
+    background-color: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.12);
     @apply backdrop-blur-md rounded-2xl;
   }
 }

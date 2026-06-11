@@ -12,9 +12,9 @@
 .label {
   font-family: var(--font-body);
   font-size: var(--text-small);
-  font-weight: 600;
+  font-weight: 500;
   line-height: var(--line-small);
-  color: var(--color-text-secondary);
+  color: var(--color-text);
 }
 
 .control {
@@ -22,9 +22,9 @@
   min-height: 44px;
   padding: 12px 16px;
   color: var(--color-text);
-  background: var(--color-surface-2);
-  border: 2px solid transparent;
-  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
   outline: none;
   font-size: var(--text-body);
   line-height: var(--line-body);
@@ -39,7 +39,7 @@
 }
 
 .control:hover {
-  border-color: rgba(51, 199, 216, 0.24);
+  border-color: rgba(56, 189, 248, 0.3);
 }
 
 .control:focus {
@@ -59,7 +59,7 @@
 
 .select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2393A4BF' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23B0AEA6' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 40px;

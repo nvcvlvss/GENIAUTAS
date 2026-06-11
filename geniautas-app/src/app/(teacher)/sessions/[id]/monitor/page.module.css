@@ -9,7 +9,7 @@
   font-family: var(--font-body);
   font-size: var(--text-small);
   font-weight: 600;
-  color: var(--color-primary);
+  color: #38BDF8;
   text-decoration: none;
 }
 
@@ -22,7 +22,7 @@
   font-size: var(--text-h4);
   font-weight: 700;
   margin: 0;
-  color: var(--color-text);
+  color: #F8FAFC;
 }
 
 .main {
@@ -42,9 +42,9 @@
   margin: var(--sp-3) var(--sp-4) 0;
   padding: var(--sp-3);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(242, 107, 107, 0.35);
-  background: rgba(242, 107, 107, 0.12);
-  color: var(--color-danger);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.12);
+  color: #EF4444;
   font-size: var(--text-small);
   line-height: var(--line-small);
 }
@@ -60,7 +60,7 @@
   font-size: var(--text-body);
   font-weight: 600;
   margin: 0 0 var(--sp-2);
-  color: var(--color-text);
+  color: #F8FAFC;
 }
 
 .subsection {
@@ -81,13 +81,13 @@
 
 .sessionMeta {
   font-size: var(--text-small);
-  color: var(--color-text-secondary);
-  margin: 0 0 var(--sp-2);
+  color: #94A3B8;
+  margin: 0 m 0 var(--sp-2);
 }
 
 .pageLoading {
   padding: var(--sp-6);
-  color: var(--color-text-secondary);
+  color: #94A3B8;
 }
 
 .mobileStudentSelector {
@@ -98,14 +98,14 @@
   .mobileStudentSelector {
     display: block !important;
     padding: var(--sp-3) var(--sp-4);
-    background: var(--color-surface-1);
-    border-bottom: 1px solid var(--color-border);
+    background: #1E293B;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
   }
 
   .mobileSelectorLabel {
     font-size: var(--text-tiny);
     font-weight: 700;
-    color: var(--color-text-secondary);
+    color: #94A3B8;
     display: block;
     margin-bottom: 4px;
   }
@@ -114,9 +114,9 @@
     width: 100%;
     padding: var(--sp-2);
     border-radius: var(--radius-sm);
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    color: var(--color-text);
+    background: #0F172A;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    color: #F8FAFC;
     font-size: var(--text-small);
     outline: none;
   }

@@ -10,6 +10,7 @@ import type { RoadmapTaskView } from "@/components/student/Roadmap";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Chip } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Avatar } from "@/components/ui/Avatar";
 import { PromptInputBox } from "@/components/ui/ai-prompt-box";
 import { 
@@ -379,26 +380,24 @@ export default function StudentLabPage() {
           )}
         </div>
         <form onSubmit={handleSendTeacherDM} className={styles.teacherDMForm}>
-          <input
-            type="text"
-            value={teacherDMInput}
-            onChange={(e) => setTeacherDMInput(e.target.value)}
-            placeholder={studentSession.sessions?.status === "active" ? "Mensaje al docente..." : "Sesión pausada"}
-            className={styles.teacherDMInput}
-            disabled={sendingTeacherDM || studentSession.sessions?.status !== "active"}
-          />
-          <button
+          <div className="flex-1">
+            <Input
+              type="text"
+              value={teacherDMInput}
+              onChange={(e) => setTeacherDMInput(e.target.value)}
+              placeholder={studentSession.sessions?.status === "active" ? "Mensaje al docente..." : "Sesión pausada"}
+              disabled={sendingTeacherDM || studentSession.sessions?.status !== "active"}
+            />
+          </div>
+          <Button
             type="submit"
-            className={styles.teacherDMButton}
             disabled={sendingTeacherDM || !teacherDMInput.trim() || studentSession.sessions?.status !== "active"}
+            loading={sendingTeacherDM}
+            className={styles.teacherDMButton}
             title="Enviar mensaje"
           >
-            {sendingTeacherDM ? (
-              <Loader2 className={styles.spin} size={14} />
-            ) : (
-              <Send size={14} />
-            )}
-          </button>
+            <Send size={14} />
+          </Button>
         </form>
       </div>
 

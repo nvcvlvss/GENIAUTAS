@@ -15,36 +15,36 @@
 }
 
 .draft {
-  background: rgba(96, 165, 250, 0.16);
-  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.12);
+  color: #3B82F6;
 }
 
 .active {
-  background: rgba(51, 199, 216, 0.18);
-  color: #33c7d8;
+  background: rgba(56, 189, 248, 0.12);
+  color: #38BDF8;
 }
 
 .paused {
-  background: rgba(242, 169, 59, 0.18);
-  color: #f2a93b;
+  background: rgba(245, 158, 11, 0.12);
+  color: #F59E0B;
 }
 
 .closed {
-  background: rgba(147, 164, 191, 0.18);
-  color: #c7d2e3;
+  background: rgba(148, 163, 184, 0.12);
+  color: #94A3B8;
 }
 
 .pending {
-  background: rgba(245, 196, 81, 0.18);
-  color: #f5c451;
+  background: rgba(245, 158, 11, 0.12);
+  color: #F59E0B;
 }
 
 .approved {
-  background: rgba(120, 209, 124, 0.18);
-  color: #78d17c;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10B981;
 }
 
 .rejected {
-  background: rgba(242, 107, 107, 0.18);
-  color: #f26b6b;
+  background: rgba(239, 68, 68, 0.12);
+  color: #EF4444;
 }

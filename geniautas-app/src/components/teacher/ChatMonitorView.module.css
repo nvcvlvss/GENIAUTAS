@@ -11,9 +11,9 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-bg);
-  border: 2px solid var(--color-primary);
-  box-shadow: var(--glow-primary-sm);
+  background-color: #FFFFFF;
+  border: 2px solid #EAEAEA;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border-radius: var(--radius-xl);
   overflow: hidden;
   position: relative;
@@ -22,8 +22,8 @@
 
 .deviceHeader {
   padding: var(--sp-3) var(--sp-4);
-  background-color: var(--color-bg-elevated);
-  border-bottom: 1px solid var(--color-border);
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #EAEAEA;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -61,7 +61,7 @@
   font-family: var(--font-heading);
   font-size: var(--text-body);
   font-weight: 700;
-  color: var(--color-text);
+  color: #111111;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -73,7 +73,7 @@
   align-items: center;
   gap: 4px;
   font-size: var(--text-tiny);
-  color: var(--color-text-secondary);
+  color: #787774;
 }
 
 .statusDot {
@@ -84,12 +84,12 @@
 }
 
 .online {
-  background-color: var(--color-success);
-  box-shadow: 0 0 6px var(--color-success);
+  background-color: #346538;
+  box-shadow: 0 0 4px rgba(52, 101, 56, 0.3);
 }
 
 .offline {
-  background-color: var(--color-text-tertiary);
+  background-color: #B0AEA6;
 }
 
 .progressRow {
@@ -101,13 +101,13 @@
 
 .progressText {
   font-size: var(--text-tiny);
-  color: var(--color-text-tertiary);
+  color: #B0AEA6;
 }
 
 .progressBar {
   width: 80px;
   height: 4px;
-  background-color: var(--color-surface-2);
+  background-color: #EAEAEA;
   border-radius: var(--radius-pill);
   overflow: hidden;
   flex-shrink: 0;
@@ -115,7 +115,7 @@
 
 .progressFill {
   height: 100%;
-  background-color: var(--color-primary);
+  background-color: #111111;
   border-radius: var(--radius-pill);
   transition: width 0.4s var(--ease-standard);
 }
@@ -125,22 +125,22 @@
 }
 
 .badge {
-  background: rgba(51, 199, 216, 0.1);
-  color: var(--color-primary);
+  background: #EDF3EC;
+  color: #346538;
   font-size: var(--text-tiny);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 3px 8px;
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(51, 199, 216, 0.2);
+  border: 1px solid rgba(52, 101, 56, 0.2);
 }
 
 .chatArea {
   flex: 1;
   overflow-y: auto;
   padding: var(--sp-4);
-  background-color: transparent;
+  background-color: #FFFFFF;
   display: flex;
   flex-direction: column;
 }
@@ -152,19 +152,19 @@
   align-items: center;
   justify-content: center;
   gap: var(--sp-4);
-  color: var(--color-text-secondary);
+  color: #787774;
 }
 
 .spin {
   animation: spin 1s linear infinite;
-  color: var(--color-primary);
+  color: #111111;
 }
 
 .thinking {
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  color: var(--color-text-secondary);
+  color: #787774;
   font-size: var(--text-small);
   font-style: italic;
 }
@@ -180,7 +180,7 @@
 
 .empty {
   text-align: center;
-  color: var(--color-text-tertiary);
+  color: #B0AEA6;
   margin-top: var(--sp-8);
   font-style: italic;
 }
@@ -204,9 +204,9 @@
   width: 320px;
   display: flex;
   flex-direction: column;
-  background-color: #1a0f30; /* Dark purple/violet theme background */
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  box-shadow: 0 0 15px rgba(168, 85, 247, 0.1);
+  background-color: #FFFFFF; /* White background to contrast with lavender bubbles */
+  border: 1px solid #E0D5ED;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border-radius: var(--radius-xl);
   overflow: hidden;
   flex-shrink: 0;
@@ -215,12 +215,12 @@
 
 .directChatHeader {
   padding: var(--sp-3) var(--sp-4);
-  background-color: rgba(168, 85, 247, 0.15);
-  border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+  background-color: rgba(107, 79, 160, 0.08);
+  border-bottom: 1px solid #E0D5ED;
   font-family: var(--font-heading);
   font-size: var(--text-body);
   font-weight: 700;
-  color: #c084fc;
+  color: #6B4FA0;
   display: flex;
   align-items: center;
   gap: var(--sp-2);
@@ -237,7 +237,7 @@
 
 .emptyDirectChat {
   text-align: center;
-  color: var(--color-text-tertiary);
+  color: #B0AEA6;
   margin-top: var(--sp-8);
   font-style: italic;
   font-size: var(--text-small);
@@ -249,16 +249,16 @@
   display: flex;
   gap: var(--sp-2);
   padding: var(--sp-3) var(--sp-4);
-  background-color: rgba(168, 85, 247, 0.05);
-  border-top: 1px solid rgba(168, 85, 247, 0.2);
+  background-color: rgba(107, 79, 160, 0.04);
+  border-top: 1px solid #E0D5ED;
   align-items: center;
 }
 
 .directDMInput {
   flex: 1;
-  background-color: var(--color-surface-2);
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  color: var(--color-text);
+  background-color: #FFFFFF;
+  border: 1px solid #E0D5ED;
+  color: #111111;
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--radius-md);
   font-size: var(--text-small);
@@ -267,11 +267,11 @@
 }
 
 .directDMInput:focus {
-  border-color: #a855f7;
+  border-color: #6B4FA0;
 }
 
 .directDMSendBtn {
-  background-color: #a855f7;
+  background-color: #6B4FA0;
   color: #fff;
   border: none;
   padding: var(--sp-2);

@@ -23,13 +23,9 @@
   width: 48px;
   height: 48px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(
-    135deg,
-    rgba(51, 199, 216, 0.35),
-    rgba(245, 196, 81, 0.2)
-  );
-  border: 1px solid var(--color-border-strong);
-  color: var(--color-primary);
+  background: #F0EFED;
+  border: 1px solid #D4D4D4;
+  color: #111111;
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: var(--text-small);

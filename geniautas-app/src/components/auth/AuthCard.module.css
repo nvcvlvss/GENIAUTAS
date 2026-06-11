@@ -5,10 +5,9 @@
 }
 
 .authCard {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
-  border: 1px solid var(--color-border);
-  backdrop-filter: blur(16px);
-  background: var(--color-bg-elevated);
+  background: #1E293B;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  box-shadow: var(--shadow-lg);
 }
 
 .brand {
@@ -22,35 +21,32 @@
   line-height: var(--line-h2);
   font-weight: 800;
   margin: 0 0 var(--sp-2);
-  color: var(--color-primary);
+  color: #F8FAFC;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--color-primary), #a855f7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
   margin: 0;
   font-size: var(--text-small);
-  color: var(--color-text-secondary);
+  color: #94A3B8;
 }
 
 /* Tabs Segmented Control */
 .tabsContainer {
   display: flex;
   position: relative;
-  background: rgba(255, 255, 255, 0.04);
+  background: #0F172A;
   border-radius: var(--radius-lg);
   padding: 4px;
   margin-bottom: var(--sp-6);
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(148, 163, 184, 0.12);
 }
 
 .tabButton {
   flex: 1;
   background: transparent;
   border: none;
-  color: var(--color-text-tertiary);
+  color: #94A3B8;
   padding: 10px 16px;
   font-size: var(--text-small);
   font-weight: 600;
@@ -64,11 +60,11 @@
 }
 
 .tabButton:focus-visible {
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.2);
 }
 
 .tabButtonActive {
-  color: #ffffff;
+  color: #0F172A;
 }
 
 .tabSlider {
@@ -77,11 +73,11 @@
   left: 4px;
   width: calc(50% - 4px);
   height: calc(100% - 8px);
-  background: var(--color-primary);
+  background: #38BDF8;
   border-radius: var(--radius-md);
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   z-index: 0;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .tabSliderRegister {
@@ -115,7 +111,7 @@
 
 .formNote {
   font-size: 11px;
-  color: var(--color-text-tertiary);
+  color: #B0AEA6;
   margin-top: var(--sp-1);
   text-align: center;
   leading-relaxed: 1.5;
@@ -125,9 +121,9 @@
 .alertDanger {
   padding: var(--sp-3) var(--sp-4);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(242, 107, 107, 0.3);
-  background: rgba(242, 107, 107, 0.08);
-  color: var(--color-danger);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.12);
+  color: #EF4444;
   font-size: var(--text-small);
   line-height: var(--line-small);
   margin-bottom: var(--sp-4);
@@ -137,9 +133,9 @@
 .alertSuccess {
   padding: var(--sp-3) var(--sp-4);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  background: rgba(34, 197, 94, 0.08);
-  color: #4ade80;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.12);
+  color: #10B981;
   font-size: var(--text-small);
   line-height: var(--line-small);
   margin-bottom: var(--sp-4);
@@ -150,8 +146,8 @@
   margin-top: var(--sp-6);
   text-align: center;
   font-size: var(--text-small);
-  color: var(--color-text-tertiary);
-  border-top: 1px solid var(--color-border);
+  color: #B0AEA6;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
   padding-top: var(--sp-4);
 }
 
@@ -159,7 +155,7 @@
   background: transparent;
   border: none;
   padding: 0;
-  color: var(--color-primary);
+  color: #38BDF8;
   text-decoration: none;
   font-weight: 600;
   font-size: inherit;

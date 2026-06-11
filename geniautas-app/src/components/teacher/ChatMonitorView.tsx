@@ -7,6 +7,8 @@ import { ChatView } from "@/components/student/ChatView";
 import { ChatBubble } from "@/components/ui/ChatBubble";
 import { Avatar } from "@/components/ui/Avatar";
 import { Loader2, Send } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import styles from "./ChatMonitorView.module.css";
 
 const AVATAR_EMOJI: Record<string, string> = {
@@ -261,6 +263,7 @@ export function ChatMonitorView({
               <ChatBubble
                 key={m.id || i}
                 variant={m.content.startsWith("[DM_DOCENTE]: ") ? "system" : "student"}
+                meta={m.content.startsWith("[DM_DOCENTE]: ") ? "Docente" : studentName}
               >
                 {m.content}
               </ChatBubble>
@@ -268,26 +271,24 @@ export function ChatMonitorView({
           )}
         </div>
         <form onSubmit={handleSendDirectDM} className={styles.directDMInputArea}>
-          <input
-            type="text"
-            value={directDMInput}
-            onChange={(e) => setDirectDMInput(e.target.value)}
-            placeholder="Mensaje directo al estudiante..."
-            className={styles.directDMInput}
-            disabled={sendingDirectDM}
-          />
-          <button
+          <div className="flex-1">
+            <Input
+              type="text"
+              value={directDMInput}
+              onChange={(e) => setDirectDMInput(e.target.value)}
+              placeholder="Mensaje directo al estudiante..."
+              disabled={sendingDirectDM}
+            />
+          </div>
+          <Button
             type="submit"
-            className={styles.directDMSendBtn}
             disabled={sendingDirectDM || !directDMInput.trim()}
+            loading={sendingDirectDM}
+            className={styles.directDMSendBtn}
             title="Enviar mensaje directo"
           >
-            {sendingDirectDM ? (
-              <Loader2 className={styles.spin} size={14} />
-            ) : (
-              <Send size={14} />
-            )}
-          </button>
+            <Send size={14} />
+          </Button>
         </form>
       </div>
     </div>

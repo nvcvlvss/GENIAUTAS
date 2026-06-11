@@ -81,14 +81,14 @@
 
 .teacherBubble {
   background: var(--color-primary);
-  color: #0b1220;
+  color: #FFFFFF;
   border-bottom-right-radius: 2px;
 }
 
 .copilotBubble {
-  background: var(--color-surface-1);
+  background: #F7F6F3;
   color: var(--color-text);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-border);
   border-bottom-left-radius: 2px;
 }
 
@@ -100,11 +100,11 @@
 }
 
 .teacherBubble .roleLabel {
-  color: #0b1220;
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .copilotBubble .roleLabel {
-  color: var(--color-primary);
+  color: var(--color-text-secondary);
 }
 
 .messageContent {
@@ -221,9 +221,9 @@
 .errorAlert {
   padding: var(--sp-3);
   border-radius: var(--radius-sm);
-  background: rgba(242, 107, 107, 0.12);
-  border: 1px solid rgba(242, 107, 107, 0.3);
-  color: var(--color-danger);
+  background: #FDEBEC;
+  border: 1px solid rgba(159, 47, 45, 0.2);
+  color: #9F2F2D;
   font-size: var(--text-small);
   text-align: center;
   align-self: center;
@@ -260,7 +260,7 @@
   padding: var(--sp-1) var(--sp-3);
   background: var(--color-surface-1);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   color: var(--color-text-secondary);
   font-size: var(--text-tiny);
   cursor: pointer;
@@ -298,7 +298,7 @@
 
 .sendButton {
   flex-shrink: 0;
-  border-radius: var(--radius-pill);
+  border-radius: 6px;
   height: 40px !important;
   width: 40px !important;
   padding: 0 !important;

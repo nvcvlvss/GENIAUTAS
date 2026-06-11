@@ -7,16 +7,18 @@
 }
 
 .risk {
-  border-color: rgba(242, 107, 107, 0.35);
-  box-shadow: var(--glow-danger-sm);
+  border-color: rgba(159, 47, 45, 0.2);
+  background: #FDEBEC;
 }
 
 .moderation {
-  border-color: rgba(242, 169, 59, 0.35);
+  border-color: rgba(149, 100, 0, 0.2);
+  background: #FBF3DB;
 }
 
 .session {
-  border-color: rgba(96, 165, 250, 0.35);
+  border-color: rgba(31, 108, 159, 0.2);
+  background: #E1F3FE;
 }
 
 .type {

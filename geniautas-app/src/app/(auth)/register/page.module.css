@@ -22,13 +22,13 @@
   line-height: var(--line-h2);
   font-weight: 700;
   margin: 0 0 var(--sp-2);
-  color: var(--color-primary);
+  color: #111111;
 }
 
 .subtitle {
   margin: 0;
   font-size: var(--text-small);
-  color: var(--color-text-secondary);
+  color: #787774;
 }
 
 .form {
@@ -40,9 +40,9 @@
 .alert {
   padding: var(--sp-3);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(242, 107, 107, 0.35);
-  background: rgba(242, 107, 107, 0.12);
-  color: var(--color-danger);
+  border: 1px solid rgba(159, 47, 45, 0.2);
+  background: #FDEBEC;
+  color: #9F2F2D;
   font-size: var(--text-small);
   line-height: var(--line-small);
 }
@@ -51,13 +51,13 @@
   margin-top: var(--sp-5);
   text-align: center;
   font-size: var(--text-small);
-  color: var(--color-text-tertiary);
+  color: #B0AEA6;
 }
 
 .link {
-  color: var(--color-primary);
+  color: #111111;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .link:hover {

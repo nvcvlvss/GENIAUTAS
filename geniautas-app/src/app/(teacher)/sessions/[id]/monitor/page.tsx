@@ -301,14 +301,14 @@ export default function SessionMonitorPage() {
       </div>
 
       {/* Navegación por pestañas */}
-      <div className="flex gap-[6px] bg-[var(--color-bg)] p-1 rounded-full border border-[var(--color-border)]">
+      <div className="flex gap-1 bg-[#0F172A] p-1 rounded-md border border-[rgba(148, 163, 184, 0.12)]">
         <button
           type="button"
           onClick={() => setActiveTab("access")}
-          className={`px-[18px] py-2 rounded-[20px] text-[13px] font-bold cursor-pointer border-none transition-all duration-150 ${
+          className={`px-4 py-2 rounded-sm text-[13px] font-semibold cursor-pointer border-none transition-all duration-150 ${
             activeTab === "access"
-              ? "bg-[var(--color-primary)] text-[#0b1220]"
-              : "bg-transparent text-[var(--color-text-secondary)] hover:text-white"
+              ? "bg-[#38BDF8] text-[#0F172A] shadow-sm"
+              : "bg-transparent text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#334155]/50"
           }`}
         >
           Control de Acceso
@@ -316,10 +316,10 @@ export default function SessionMonitorPage() {
         <button
           type="button"
           onClick={() => setActiveTab("monitor")}
-          className={`px-[18px] py-2 rounded-[20px] text-[13px] font-bold cursor-pointer border-none transition-all duration-150 ${
+          className={`px-4 py-2 rounded-sm text-[13px] font-semibold cursor-pointer border-none transition-all duration-150 ${
             activeTab === "monitor"
-              ? "bg-[var(--color-primary)] text-[#0b1220]"
-              : "bg-transparent text-[var(--color-text-secondary)] hover:text-white"
+              ? "bg-[#38BDF8] text-[#0F172A] shadow-sm"
+              : "bg-transparent text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#334155]/50"
           }`}
         >
           Monitoreo y Alertas
@@ -327,10 +327,10 @@ export default function SessionMonitorPage() {
         <button
           type="button"
           onClick={() => setActiveTab("copilot")}
-          className={`px-[18px] py-2 rounded-[20px] text-[13px] font-bold cursor-pointer border-none transition-all duration-150 ${
+          className={`px-4 py-2 rounded-sm text-[13px] font-semibold cursor-pointer border-none transition-all duration-150 ${
             activeTab === "copilot"
-              ? "bg-[var(--color-primary)] text-[#0b1220]"
-              : "bg-transparent text-[var(--color-text-secondary)] hover:text-white"
+              ? "bg-[#38BDF8] text-[#0F172A] shadow-sm"
+              : "bg-transparent text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#334155]/50"
           }`}
         >
           IA Copiloto de Sesión
@@ -671,7 +671,4 @@ export default function SessionMonitorPage() {
       aside={aside}
       asideTitle={asideTitle}
       hideSidebarOnMobile={activeTab === "monitor" || activeTab === "copilot"}
-      hideAsideOnMobile={activeTab === "monitor" || activeTab === "copilot"}
-    />
-  );
-}
+      hideAsideOnMobile={activeTab === "monitor" 
