@@ -23,7 +23,7 @@ export function CopilotChat({ sessionId }: CopilotChatProps) {
     {
       role: "assistant",
       content:
-        "¡Hola, Docente! Soy tu copiloto pedagógico en tiempo real (Aydante). Estoy conectado con los datos del aula y las alertas de Supabase. Puedo informarte sobre el avance de los alumnos, explicarte alertas activas y sugerirte preguntas de mediación socrática para tus estudiantes. ¿En qué te puedo asistir hoy?",
+        "¡Hola, Docente! Soy tu copiloto pedagógico en tiempo real (Ayudante). Estoy conectado con los datos del aula y las alertas de Supabase. Puedo informarte sobre el avance de los alumnos, explicarte alertas activas y sugerirte preguntas de mediación socrática para tus estudiantes. ¿En qué te puedo asistir hoy?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -92,7 +92,7 @@ export function CopilotChat({ sessionId }: CopilotChatProps) {
       <div className={styles.chatHeader}>
         <div className={styles.headerTitle}>
           <Bot className={styles.copilotIcon} size={20} />
-          <span>Aydante Copiloto</span>
+          <span>Ayudante Copiloto</span>
           <Sparkles className={styles.sparkleIcon} size={14} />
         </div>
         <p className={styles.headerSubtitle}>
@@ -115,7 +115,7 @@ export function CopilotChat({ sessionId }: CopilotChatProps) {
                 }`}
               >
                 <div className={styles.roleLabel}>
-                  {msg.role === "user" ? "Tú (Docente)" : "Copiloto Aydante"}
+                  {msg.role === "user" ? "Tú (Docente)" : "Copiloto Ayudante"}
                 </div>
                 <div className={styles.messageContent}>
                   <ReactMarkdown
@@ -138,7 +138,7 @@ export function CopilotChat({ sessionId }: CopilotChatProps) {
           {sending && (
             <div className={`${styles.messageWrapper} ${styles.copilotWrapper}`}>
               <div className={`${styles.messageBubble} ${styles.copilotBubble}`}>
-                <div className={styles.roleLabel}>Copiloto Aydante</div>
+                <div className={styles.roleLabel}>Copiloto Ayudante</div>
                 <div className={styles.loadingState}>
                   <Loader2 className={styles.spin} size={16} />
                   <span>Analizando estado de la sesión y redactando respuesta...</span>
@@ -201,7 +201,7 @@ export function CopilotChat({ sessionId }: CopilotChatProps) {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Pregúntale a Aydante sobre el avance de algún alumno, alertas o consejos..."
+            placeholder="Pregúntale a Ayudante sobre el avance de algún alumno, alertas o consejos..."
             disabled={sending}
             required
             autoComplete="off"
