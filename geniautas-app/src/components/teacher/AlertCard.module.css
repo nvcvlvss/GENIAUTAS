@@ -7,18 +7,30 @@
 }
 
 .risk {
-  border-color: rgba(159, 47, 45, 0.2);
-  background: #FDEBEC;
+  border-color: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.risk .title {
+  color: #EF4444;
 }
 
 .moderation {
-  border-color: rgba(149, 100, 0, 0.2);
-  background: #FBF3DB;
+  border-color: rgba(245, 158, 11, 0.25);
+  background: rgba(245, 158, 11, 0.12);
+}
+
+.moderation .title {
+  color: #F59E0B;
 }
 
 .session {
-  border-color: rgba(31, 108, 159, 0.2);
-  background: #E1F3FE;
+  border-color: rgba(59, 130, 246, 0.25);
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.session .title {
+  color: #3B82F6;
 }
 
 .type {

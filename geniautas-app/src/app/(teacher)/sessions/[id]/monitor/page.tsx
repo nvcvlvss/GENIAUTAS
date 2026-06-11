@@ -671,4 +671,7 @@ export default function SessionMonitorPage() {
       aside={aside}
       asideTitle={asideTitle}
       hideSidebarOnMobile={activeTab === "monitor" || activeTab === "copilot"}
-      hideAsideOnMobile={activeTab === "monitor" 
+      hideAsideOnMobile={activeTab === "monitor" || activeTab === "copilot"}
+    />
+  );
+}
