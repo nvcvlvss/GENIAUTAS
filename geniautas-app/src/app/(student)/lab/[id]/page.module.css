@@ -13,12 +13,13 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius-md);
-  background: #1E293B;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  color: #38BDF8;
+  background: rgba(10, 12, 22, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-primary);
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: var(--text-tiny);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
 }
 
 .headings {
@@ -30,14 +31,14 @@
   font-size: var(--text-h4);
   font-weight: 700;
   margin: 0;
-  color: #F8FAFC;
+  color: var(--color-text);
 }
 
 .sessionHint {
   margin: var(--sp-1) 0 0;
   font-family: var(--font-mono);
   font-size: var(--text-mono);
-  color: #94A3B8;
+  color: var(--color-text-tertiary);
 }
 
 .headerRight {
@@ -69,7 +70,7 @@
   justify-content: center;
   gap: var(--sp-3);
   padding: var(--sp-8);
-  color: #787774;
+  color: var(--color-text-tertiary);
 }
 
 .spin {
@@ -92,7 +93,7 @@
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  color: #787774;
+  color: var(--color-text-tertiary);
   font-size: var(--text-small);
   font-style: italic;
 }
@@ -121,18 +122,18 @@
   font-family: var(--font-heading);
   font-size: var(--text-h4);
   margin: 0;
-  color: #F8FAFC;
+  color: var(--color-text);
 }
 
 .studentGrade {
   font-size: var(--text-tiny);
-  color: #B0AEA6;
+  color: var(--color-text-tertiary);
   margin: 0;
 }
 
 .divider {
   height: 1px;
-  background: rgba(148, 163, 184, 0.12);
+  background: rgba(255, 255, 255, 0.06);
   margin: var(--sp-2) 0 var(--sp-4);
 }
 
@@ -152,23 +153,23 @@
 }
 
 .statLabel {
-  color: #B0AEA6;
+  color: var(--color-text-tertiary);
 }
 
 .statValue {
-  color: #F59E0B;
+  color: var(--color-progress);
 }
 
 .progressBar {
   height: 6px;
-  background: rgba(148, 163, 184, 0.12);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: var(--radius-pill);
   overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
-  background: #F59E0B;
+  background: var(--color-progress);
   transition: width 0.4s var(--ease-standard);
 }
 
@@ -196,18 +197,19 @@
 
 .teacherChatPanel {
   width: 300px;
-  border-right: 1px solid rgba(148, 163, 184, 0.12);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   flex-direction: column;
-  background-color: rgba(30, 41, 59, 0.5);
+  background-color: rgba(10, 12, 22, 0.35);
+  backdrop-filter: blur(10px);
   flex-shrink: 0;
   height: 100%;
 }
 
 .teacherChatHeader {
   padding: var(--sp-3) var(--sp-4);
-  background-color: rgba(167, 139, 250, 0.08);
-  border-bottom: 1px solid rgba(167, 139, 250, 0.2);
+  background-color: rgba(167, 139, 250, 0.04);
+  border-bottom: 1px solid rgba(167, 139, 250, 0.12);
   font-family: var(--font-heading);
   font-size: var(--text-body);
   font-weight: 700;
@@ -228,7 +230,7 @@
 
 .emptyDMs {
   text-align: center;
-  color: #B0AEA6;
+  color: var(--color-text-tertiary);
   margin-top: var(--sp-6);
   font-style: italic;
   font-size: var(--text-small);
@@ -240,16 +242,16 @@
   display: flex;
   gap: var(--sp-2);
   padding: var(--sp-3) var(--sp-4);
-  background-color: rgba(167, 139, 250, 0.04);
-  border-top: 1px solid rgba(167, 139, 250, 0.2);
+  background-color: rgba(10, 12, 22, 0.45);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   align-items: center;
 }
 
 .teacherDMInput {
   flex: 1;
-  background-color: #0F172A;
-  border: 1px solid rgba(167, 139, 250, 0.25);
-  color: #F8FAFC;
+  background-color: rgba(4, 4, 9, 0.5);
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  color: var(--color-text);
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--radius-md);
   font-size: var(--text-small);

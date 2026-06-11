@@ -6,8 +6,8 @@
   text-align: center;
   gap: var(--sp-3);
   padding: var(--sp-6) var(--sp-4);
-  background: #FFFFFF;
-  border: 1px dashed #D4D4D4;
+  background: rgba(10, 12, 22, 0.55);
+  border: 1px dashed rgba(148, 163, 184, 0.25);
   border-radius: var(--radius-lg);
   color: var(--color-text-secondary);
 }
@@ -19,8 +19,8 @@
   width: 56px;
   height: 56px;
   border-radius: var(--radius-pill);
-  background: #F0EFED;
-  color: #111111;
+  background: rgba(56, 189, 248, 0.08);
+  color: var(--color-primary);
 }
 
 .title {

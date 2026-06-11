@@ -38,6 +38,15 @@ const STATUS_CHIP: Record<SessionStatus, ChipStatus> = {
   closed: "closed",
 };
 
+const AVATAR_EMOJI: Record<string, string> = {
+  "1": "🦊",
+  "2": "🐨",
+  "3": "🦁",
+  "4": "🐯",
+  "5": "🐼",
+  "6": "🐙",
+};
+
 type AccessRequestRow = Database["public"]["Tables"]["session_join_requests"]["Row"];
 
 export default function SessionMonitorPage() {
@@ -400,21 +409,90 @@ export default function SessionMonitorPage() {
                 description="Ningún estudiante ha ingresado aún. Revisa las solicitudes en la sala de espera."
               />
             ) : (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                 {students.map((student) => {
                   const isOnline = student.is_active;
+                  const hasAlert = alerts.some((a) => a.student_session_id === student.id && !a.is_resolved);
+                  
+                  let liveStatus: "active" | "alert" | "thinking" | "offline" = "offline";
+                  if (isOnline) {
+                    if (hasAlert) {
+                      liveStatus = "alert";
+                    } else if ((student.completed_tasks_count || 0) < totalTasks) {
+                      liveStatus = "thinking";
+                    } else {
+                      liveStatus = "active";
+                    }
+                  }
+
+                  const statusConfig = {
+                    active: {
+                      dotClass: "bg-emerald-500 shadow-[0_0_10px_#10b981]",
+                      textClass: "text-emerald-400 border-emerald-500/20 bg-emerald-500/10",
+                      label: "ACTIVO"
+                    },
+                    alert: {
+                      dotClass: "bg-rose-500 animate-pulse shadow-[0_0_12px_#ef4444]",
+                      textClass: "text-rose-400 border-rose-500/20 bg-rose-500/10",
+                      label: "ALERTA"
+                    },
+                    thinking: {
+                      dotClass: "bg-sky-400 animate-pulse shadow-[0_0_10px_#38bdf8]",
+                      textClass: "text-sky-400 border-sky-500/20 bg-sky-500/10",
+                      label: "ESCRIBIENDO"
+                    },
+                    offline: {
+                      dotClass: "bg-slate-600",
+                      textClass: "text-slate-400 border-slate-500/10 bg-slate-500/5",
+                      label: "DESCONECTADO"
+                    }
+                  }[liveStatus];
+
+                  const emoji = AVATAR_EMOJI[student.avatar_id] ?? "👤";
+
                   return (
-                    <Card key={student.id} padding="default" className="border border-[var(--color-border)] flex items-center gap-3 bg-[var(--color-surface-1)]">
-                      <span className="text-2xl">👤</span>
-                      <div className="min-w-0 flex-1">
-                        <div className="font-bold text-sm truncate">
-                          {student.full_name}
+                    <div 
+                      key={student.id} 
+                      className="glass-hud hud-corners dotted-grid p-4 flex flex-col justify-between gap-4 rounded-lg border border-[rgba(255,255,255,0.06)] shadow-md hover:border-[var(--color-primary)]/30 transition-all select-none"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="text-3xl flex-none bg-[rgba(255,255,255,0.03)] p-1.5 rounded border border-[rgba(255,255,255,0.04)]">{emoji}</span>
+                          <div className="min-w-0">
+                            <div className="font-bold text-sm text-[#F8FAFC] truncate">
+                              {student.full_name}
+                            </div>
+                            <div className="text-[10px] font-mono text-slate-400 mt-0.5">
+                              ID: {student.id.substring(0, 8).toUpperCase()}
+                            </div>
+                          </div>
                         </div>
-                        <div className={`text-xs ${isOnline ? "text-[var(--color-success)]" : "text-[var(--color-text-tertiary)]"}`}>
-                          {isOnline ? "En línea" : "Desconectado"} · {student.completed_tasks_count || 0}/{totalTasks} tareas
+
+                        {/* Status LED Pill */}
+                        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded border text-[9px] font-mono font-bold tracking-wider ${statusConfig.textClass}`}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${statusConfig.dotClass}`} />
+                          {statusConfig.label}
                         </div>
                       </div>
-                    </Card>
+
+                      {/* Telemetry progress bar */}
+                      <div className="pt-2 border-t border-[rgba(255,255,255,0.05)]">
+                        <div className="flex justify-between items-center text-[10px] font-mono text-slate-400 mb-1.5">
+                          <span>TELEMETRÍA ROADMAP</span>
+                          <span className="text-[#38BDF8] font-bold">
+                            {student.completed_tasks_count || 0}/{totalTasks} TAREAS
+                          </span>
+                        </div>
+                        <div className="h-1.5 w-full bg-[rgba(255,255,255,0.04)] rounded-full overflow-hidden border border-[rgba(255,255,255,0.04)]">
+                          <div 
+                            className="h-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-strong)] transition-all duration-500"
+                            style={{ 
+                              width: `${totalTasks > 0 ? ((student.completed_tasks_count || 0) / totalTasks) * 100 : 0}%` 
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
                   );
                 })}
               </div>

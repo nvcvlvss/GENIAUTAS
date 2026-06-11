@@ -1,28 +1,28 @@
 .shell {
   display: grid;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   grid-template-columns: 1fr min(var(--panel-aside), 100%);
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
   grid-template-areas:
     "header header"
-    "main aside"
-    "footer footer";
+    "main aside";
   background: transparent;
   color: var(--color-text);
+  overflow: hidden;
 }
 
 .header {
   grid-area: header;
   padding: var(--sp-3) var(--sp-4);
-  background: var(--color-bg-elevated);
-  border-bottom: 1px solid var(--color-border);
+  background: rgba(10, 12, 22, 0.65);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-3);
   flex-wrap: wrap;
-  position: sticky;
-  top: 0;
   z-index: 100;
 }
 
@@ -31,8 +31,9 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  border-right: 1px solid var(--color-border);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   overflow: hidden;
+  height: 100%;
 }
 
 .aside {
@@ -40,29 +41,11 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  background: var(--color-bg-elevated);
+  background: rgba(10, 12, 22, 0.45);
+  backdrop-filter: blur(16px);
   overflow: hidden;
-  position: sticky;
-  top: 73px; /* Approximate header height */
-  height: calc(100dvh - 73px - 82px); /* Calc based on header and approximate footer */
-}
-
-@media (min-width: 901px) {
-  .aside {
-    height: calc(100dvh - 73px); /* When footer is inside or differently placed */
-    position: sticky;
-    top: 73px;
-  }
-}
-
-.footer {
-  grid-area: footer;
-  padding: var(--sp-3) var(--sp-4);
-  background: transparent;
-  border-top: none;
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
+  height: 100%;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .backdrop {
@@ -72,15 +55,15 @@
 @media (max-width: 900px) {
   .shell {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto 1fr;
     grid-template-areas:
       "header"
-      "main"
-      "footer";
+      "main";
   }
 
   .main {
     border-right: none;
+    height: 100%;
   }
 
   .backdrop {
@@ -105,11 +88,9 @@
     box-shadow: var(--shadow-lg);
     transform: translateX(100%);
     transition: transform var(--transition-base);
-    border-left: 1px solid var(--color-border);
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
     border-top: none;
     max-height: none;
-    height: 100dvh;
-    top: 0;
   }
 
   .aside.open {

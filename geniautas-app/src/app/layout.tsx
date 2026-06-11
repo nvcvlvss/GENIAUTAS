@@ -35,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={cn(dmSans.variable, spaceMono.variable, fredokaHeading.variable, "font-sans", inter.variable)}>
-      <body className="relative min-h-screen bg-[var(--color-bg)]">
+      <body className="relative min-h-screen bg-internal-radial">
         {children}
       </body>
     </html>
